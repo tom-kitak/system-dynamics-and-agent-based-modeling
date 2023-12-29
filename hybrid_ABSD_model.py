@@ -12,22 +12,25 @@ class DepressionTreatmentHybridABSD(Model):
         self.sd_model = None
         self.exchange = {}
         self.exchange["depression_treatment_demand"] = 0
-        self.exchange["out_anti_depressant"] = 0
+        self.exchange["out_antidepressant"] = 0
 
 
     def configure(self, config):
         super().configure(config)
         self.sd_model = DepressionTreatmentSystemDynamics(self)
+        self.treatment_properties = config["treatment_properties"]
 
         # self.sd_model.treatment_success_rate.equation = self.treatment_success_rate
 
     def end_round(self, time, sim_round, step):
 
         depression_treatment_demand = 0
-        update_anti_depressant_waiting_list = int(self.evaluate_equation("anti_depressant_waiting_list", time))
-        update_anti_depressant_anti_psychotic_waiting_list = \
-            int(self.evaluate_equation("anti_depressant_anti_psychotic_waiting_list", time))
-        update_anti_anti_psychotic_waiting_list = int(self.evaluate_equation("anti_psychotic_waiting_list", time))
+        outflow_antidepressant = 0
+
+        update_antidepressant_waiting_list = int(self.evaluate_equation("antidepressant_waiting_list", time))
+        update_antidepressant_antipsychotic_waiting_list = int(self.evaluate_equation("antidepressant_antipsychotic_waiting_list", time))
+        update_anti_antipsychotic_waiting_list = int(self.evaluate_equation("antipsychotic_waiting_list", time))
+        out_antidepressant_waiting_list = int(self.evaluate_equation("out_antidepressant_waiting_list", time))
 
         shuffled_agents = np.random.permutation(self.agents)
 
@@ -35,22 +38,26 @@ class DepressionTreatmentHybridABSD(Model):
             if agent.state == "untreated":
                 depression_treatment_demand += 1
 
-                if update_anti_depressant_waiting_list > 0:
-                    agent.state = "anti_depressant_waiting_list"
+                if update_antidepressant_waiting_list > 0:
+                    agent.state = "antidepressant_waiting_list"
                     agent.waiting_time = 0
-                    update_anti_depressant_waiting_list -= 1
-                elif update_anti_depressant_anti_psychotic_waiting_list > 0:
-                    agent.state = "anti_depressant_anti_psychotic_waiting_list"
+                    update_antidepressant_waiting_list -= 1
+                elif update_antidepressant_antipsychotic_waiting_list > 0:
+                    agent.state = "antidepressant_antipsychotic_waiting_list"
                     agent.waiting_time = 0
-                    update_anti_depressant_anti_psychotic_waiting_list -= 1
-                elif update_anti_anti_psychotic_waiting_list > 0:
-                    agent.state = "anti_psychotic_waiting_list"
+                    update_antidepressant_antipsychotic_waiting_list -= 1
+                elif update_anti_antipsychotic_waiting_list > 0:
+                    agent.state = "antipsychotic_waiting_list"
                     agent.waiting_time = 0
-                    update_anti_anti_psychotic_waiting_list -= 1
+                    update_anti_antipsychotic_waiting_list -= 1
             elif "waiting_list" in agent.state:
                 agent.waiting_time += 1
+                # We're here
+                # if agent.state == "antidepressant_waiting_list" and out_ad_waiting_list > 0:
 
-            if agent.state == "anti_depressant_waiting_list" and agent.waiting_time == :
+            if agent.state == "antidepressant" and agent.waiting_time == self.treatment_properties["antidepressant"]["duration"]:
+                outflow_antidepressant += 1
+            
 
 
         self.exchange["depression_treatment_demand"] = depression_treatment_demand

@@ -65,6 +65,39 @@ if __name__ == "__main__":
                     "treatment_adherence": 0.873,
                     "mean_delta_madrs": -15.05,
                     "sd_delta_madrs": 0.8245
+                },
+                "antidepressant_antipsychotic": {
+                    "duration": 4, 
+                    "cost": 7200, 
+                    "response_rate": 0.524, 
+                    "remission_rate": 0.3886, 
+                    "relapse_rate": 0.035, 
+                    "suicide_rate": 0, 
+                    "treatment_adherence": 0.9355, 
+                    "mean_delta_madrs": -16.15, 
+                    "sd_delta_madrs": 0.8115 
+                },
+                "antidepressant": {
+                    "duration": 4, 
+                    "cost": 5000, 
+                    "response_rate": 0.402, 
+                    "remission_rate": 0.34, 
+                    "relapse_rate": 0.055, 
+                    "suicide_rate": 0, 
+                    "treatment_adherence": 0.944, 
+                    "mean_delta_madrs": -13, 
+                    "sd_delta_madrs": 3.5 
+                },
+                "ect": {
+                    "duration": 4, 
+                    "cost": 8000, 
+                    "response_rate": 0.414, 
+                    "remission_rate": 0.591, 
+                    "relapse_rate": 0.015, 
+                    "suicide_rate": 0, 
+                    "treatment_adherence": 0.874, 
+                    "mean_delta_madrs": -15.5, 
+                    "sd_delta_madrs": 4 
                 }
             }
     }

@@ -6,16 +6,16 @@ class DepressionTreatmentSystemDynamics:
 
         # # Stocks
         # Treatments
-        self.anti_depressant = model.stock("anti_depressant")
-        self.anti_depressant_anti_psychotic = model.stock("anti_depressant_anti_psychotic")
-        self.anti_psychotic = model.stock("anti_psychotic")
+        self.antidepressant = model.stock("antidepressant")
+        self.antidepressant_antipsychotic = model.stock("antidepressant_antipsychotic")
+        self.antipsychotic = model.stock("antipsychotic")
         self.esketamine = model.stock("esketamine")
         self.ect = model.stock("ect")
 
         # Waiting times
-        self.anti_depressant_waiting_list = model.stock("anti_depressant_waiting_list")
-        self.anti_depressant_anti_psychotic_waiting_list = model.stock("anti_depressant_anti_psychotic_waiting_list")
-        self.anti_psychotic_waiting_list = model.stock("anti_psychotic_waiting_list")
+        self.antidepressant_waiting_list = model.stock("antidepressant_waiting_list")
+        self.antidepressant_antipsychotic_waiting_list = model.stock("antidepressant_antipsychotic_waiting_list")
+        self.antipsychotic_waiting_list = model.stock("antipsychotic_waiting_list")
         self.esketamine_waiting_list = model.stock("esketamine_waiting_list")
         self.ect_waiting_list = model.stock("ect_waiting_list")
 
@@ -26,26 +26,26 @@ class DepressionTreatmentSystemDynamics:
 
         # # Flows
         # Treatments
-        self.in_anti_depressant = model.flow("in_anti_depressant")
-        self.out_anti_depressant = model.flow("out_anti_depressant")
-        self.in_anti_depressant_anti_psychotic = model.flow("in_anti_depressant_anti_psychotic")
-        self.out_anti_depressant_anti_psychotic = model.flow("out_anti_depressant_anti_psychotic")
-        self.in_anti_psychotic = model.flow("in_anti_psychotic")
-        self.out_anti_psychotic = model.flow("out_anti_psychotic")
+        self.in_antidepressant = model.flow("in_antidepressant")
+        self.out_antidepressant = model.flow("out_antidepressant")
+        self.in_antidepressant_antipsychotic = model.flow("in_antidepressant_antipsychotic")
+        self.out_antidepressant_antipsychotic = model.flow("out_antidepressant_antipsychotic")
+        self.in_antipsychotic = model.flow("in_antipsychotic")
+        self.out_antipsychotic = model.flow("out_antipsychotic")
         self.in_esketamine = model.flow("in_esketamine")
         self.out_esketamine = model.flow("out_esketamine")
         self.in_ect = model.flow("in_ect")
         self.out_ect = model.flow("out_ect")
 
         # Waiting times
-        self.in_anti_depressant_waiting_list = model.flow("in_anti_depressant_waiting_list")
-        self.out_anti_depressant_waiting_list = model.flow("out_anti_depressant_waiting_list")
-        self.in_anti_depressant_anti_psychotic_waiting_list = model.flow(
-            "in_anti_depressant_anti_psychotic_waiting_list")
-        self.out_anti_depressant_anti_psychotic_waiting_list = model.flow(
-            "out_anti_depressant_anti_psychotic_waiting_list")
-        self.in_anti_psychotic_waiting_list = model.flow("in_anti_psychotic_waiting_list")
-        self.out_anti_psychotic_waiting_list = model.flow("out_anti_psychotic_waiting_list")
+        self.in_antidepressant_waiting_list = model.flow("in_antidepressant_waiting_list")
+        self.out_antidepressant_waiting_list = model.flow("out_antidepressant_waiting_list")
+        self.in_antidepressant_antipsychotic_waiting_list = model.flow(
+            "in_antidepressant_antipsychotic_waiting_list")
+        self.out_antidepressant_antipsychotic_waiting_list = model.flow(
+            "out_antidepressant_antipsychotic_waiting_list")
+        self.in_antipsychotic_waiting_list = model.flow("in_antipsychotic_waiting_list")
+        self.out_antipsychotic_waiting_list = model.flow("out_antipsychotic_waiting_list")
         self.in_esketamine_waiting_list = model.flow("in_esketamine_waiting_list")
         self.out_esketamine_waiting_list = model.flow("out_esketamine_waiting_list")
         self.in_ect_waiting_list = model.flow("in_ect_waiting_list")
@@ -63,29 +63,29 @@ class DepressionTreatmentSystemDynamics:
         self.depression_treatment_demand = model.converter("depression_treatment_demand")
 
         # # Constants
-        self.anti_depressant_allocation_percentage = model.constant("anti_depressant_allocation_percentage")
-        self.anti_depressant_anti_psychotic_allocation_percentage = model.constant(
-            "anti_depressant_anti_psychotic_allocation_percentage")
-        self.anti_psychotic_allocation_percentage = model.constant("anti_psychotic_allocation_percentage")
+        self.antidepressant_allocation_percentage = model.constant("antidepressant_allocation_percentage")
+        self.antidepressant_antipsychotic_allocation_percentage = model.constant(
+            "antidepressant_antipsychotic_allocation_percentage")
+        self.antipsychotic_allocation_percentage = model.constant("antipsychotic_allocation_percentage")
 
         # Capacities
-        self.anti_depressant_capacity = model.constant("anti_depressant_capacity")
-        self.anti_depressant_anti_psychotic_capacity = model.constant("anti_depressant_anti_psychotic_capacity")
-        self.anti_psychotic_capacity = model.constant("anti_psychotic_capacity")
+        self.antidepressant_capacity = model.constant("antidepressant_capacity")
+        self.antidepressant_antipsychotic_capacity = model.constant("antidepressant_antipsychotic_capacity")
+        self.antipsychotic_capacity = model.constant("antipsychotic_capacity")
 
         # # Equations
         
         # Treatments flow
-        self.anti_depressant.equation = self.in_anti_depressant - self.out_anti_depressant
-        self.anti_depressant_anti_psychotic.equation = self.in_anti_depressant_anti_psychotic - self.out_anti_depressant_anti_psychotic
-        self.anti_psychotic.equation = self.in_anti_psychotic - self.out_anti_psychotic
+        self.antidepressant.equation = self.in_antidepressant - self.out_antidepressant
+        self.antidepressant_antipsychotic.equation = self.in_antidepressant_antipsychotic - self.out_antidepressant_antipsychotic
+        self.antipsychotic.equation = self.in_antipsychotic - self.out_antipsychotic
         self.esketamine.equation = self.in_esketamine - self.out_esketamine
         self.ect.equation = self.in_ect - self.out_ect
 
         # Waiting times flow
-        self.anti_depressant_waiting_list.equation = self.in_anti_depressant_waiting_list - self.out_anti_depressant_waiting_list
-        self.anti_depressant_anti_psychotic_waiting_list.equation = self.in_anti_depressant_anti_psychotic_waiting_list - self.out_anti_depressant_anti_psychotic_waiting_list
-        self.anti_psychotic_waiting_list.equation = self.in_anti_psychotic_waiting_list - self.out_anti_psychotic_waiting_list
+        self.antidepressant_waiting_list.equation = self.in_antidepressant_waiting_list - self.out_antidepressant_waiting_list
+        self.antidepressant_antipsychotic_waiting_list.equation = self.in_antidepressant_antipsychotic_waiting_list - self.out_antidepressant_antipsychotic_waiting_list
+        self.antipsychotic_waiting_list.equation = self.in_antipsychotic_waiting_list - self.out_antipsychotic_waiting_list
         self.esketamine_waiting_list.equation = self.in_esketamine_waiting_list - self.out_esketamine_waiting_list
         self.ect_waiting_list.equation = self.in_ect_waiting_list - self.out_ect_waiting_list
 
@@ -99,20 +99,20 @@ class DepressionTreatmentSystemDynamics:
             lambda m, t: m.exchange["depression_treatment_demand"])()
 
         # These are based on Julia's percentages from the decision tree
-        self.in_anti_depressant_waiting_list.equation = self.anti_depressant_allocation_percentage * self.depression_treatment_demand
-        self.in_anti_depressant_anti_psychotic_waiting_list.equation = self.anti_depressant_anti_psychotic_allocation_percentage * self.depression_treatment_demand
-        self.in_anti_psychotic_waiting_list.equation = self.anti_psychotic_allocation_percentage * self.depression_treatment_demand
+        self.in_antidepressant_waiting_list.equation = self.antidepressant_allocation_percentage * self.depression_treatment_demand
+        self.in_antidepressant_antipsychotic_waiting_list.equation = self.antidepressant_antipsychotic_allocation_percentage * self.depression_treatment_demand
+        self.in_antipsychotic_waiting_list.equation = self.antipsychotic_allocation_percentage * self.depression_treatment_demand
 
         # Starting treatment
-        self.out_anti_depressant = self.model.function("out_anti_depressant_update",
-            lambda m, t: m.exchange["out_anti_depressant"])()
-        self.in_anti_depressant = self.anti_depressant_capacity - self.anti_depressant
+        self.out_antidepressant = self.model.function("out_antidepressant_update",
+            lambda m, t: m.exchange["out_antidepressant"])()
+        self.in_antidepressant = self.antidepressant_capacity - self.antidepressant
 
         # # Initial values
         # NOTE: These values are from Julia's decision tree thingy, probably going to change
-        self.anti_depressant_allocation_percentage.equation = 59.915
-        self.anti_depressant_anti_psychotic_allocation_percentage.equation = 35.254999999999995
-        self.anti_psychotic_allocation_percentage.equation = 4.83
+        self.antidepressant_allocation_percentage.equation = 59.915
+        self.antidepressant_antipsychotic_allocation_percentage.equation = 35.254999999999995
+        self.antipsychotic_allocation_percentage.equation = 4.83
 
         # self.mild_depression_treatment_demand.equation = self.model.function("mild_depression_treatment_update",
             # lambda m, t: m.exchange["mild_depression_treatment_demand"])()
