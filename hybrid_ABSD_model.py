@@ -10,15 +10,7 @@ class DepressionTreatmentHybridABSD(Model):
 
         self.sd_model = None
         self.exchange = {}
-        self.exchange["mild_depression_treatment_demand"] = 0
-        self.exchange["moderate_depression_treatment_demand"] = 0
-        self.exchange["severe_depression_treatment_demand"] = 0
-
-        self.exchange["AD_finished_treatment"] = 0
-        self.exchange["AD_AP_finished_treatment"] = 0
-        self.exchange["AP_finished_treatment"] = 0
-
-        self.exchange["remission"] = 0
+        self.exchange["depression_treatment_demand"] = 0
 
 
     def configure(self, config):

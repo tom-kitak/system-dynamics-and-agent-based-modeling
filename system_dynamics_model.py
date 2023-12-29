@@ -26,87 +26,86 @@ class DepressionTreatmentSystemDynamics:
 
         # # Flows
         # Treatments
-        self.in_anti_depressant = model.stock("in_anti_depressant")
-        self.out_anti_depressant = model.stock("out_anti_depressant")
-        self.in_anti_depressant_anti_psychotic = model.stock("in_anti_depressant_anti_psychotic")
-        self.out_anti_depressant_anti_psychotic = model.stock("out_anti_depressant_anti_psychotic")
-        self.in_anti_psychotic = model.stock("in_anti_psychotic")
-        self.out_anti_psychotic = model.stock("out_anti_psychotic")
-        self.in_esketamine = model.stock("in_esketamine")
-        self.out_esketamine = model.stock("out_esketamine")
-        self.in_ect = model.stock("in_ect")
-        self.out_ect = model.stock("out_ect")
+        self.in_anti_depressant = model.flow("in_anti_depressant")
+        self.out_anti_depressant = model.flow("out_anti_depressant")
+        self.in_anti_depressant_anti_psychotic = model.flow("in_anti_depressant_anti_psychotic")
+        self.out_anti_depressant_anti_psychotic = model.flow("out_anti_depressant_anti_psychotic")
+        self.in_anti_psychotic = model.flow("in_anti_psychotic")
+        self.out_anti_psychotic = model.flow("out_anti_psychotic")
+        self.in_esketamine = model.flow("in_esketamine")
+        self.out_esketamine = model.flow("out_esketamine")
+        self.in_ect = model.flow("in_ect")
+        self.out_ect = model.flow("out_ect")
 
         # Waiting times
-        self.in_anti_depressant_waiting_list = model.stock("in_anti_depressant_waiting_list")
-        self.out_anti_depressant_waiting_list = model.stock("out_anti_depressant_waiting_list")
-        self.in_anti_depressant_anti_psychotic_waiting_list = model.stock(
+        self.in_anti_depressant_waiting_list = model.flow("in_anti_depressant_waiting_list")
+        self.out_anti_depressant_waiting_list = model.flow("out_anti_depressant_waiting_list")
+        self.in_anti_depressant_anti_psychotic_waiting_list = model.flow(
             "in_anti_depressant_anti_psychotic_waiting_list")
-        self.out_anti_depressant_anti_psychotic_waiting_list = model.stock(
+        self.out_anti_depressant_anti_psychotic_waiting_list = model.flow(
             "out_anti_depressant_anti_psychotic_waiting_list")
-        self.in_anti_psychotic_waiting_list = model.stock("in_anti_psychotic_waiting_list")
-        self.out_anti_psychotic_waiting_list = model.stock("out_anti_psychotic_waiting_list")
-        self.in_esketamine_waiting_list = model.stock("in_esketamine_waiting_list")
-        self.out_esketamine_waiting_list = model.stock("out_esketamine_waiting_list")
-        self.in_ect_waiting_list = model.stock("in_ect_waiting_list")
-        self.out_ect_waiting_list = model.stock("out_ect_waiting_list")
+        self.in_anti_psychotic_waiting_list = model.flow("in_anti_psychotic_waiting_list")
+        self.out_anti_psychotic_waiting_list = model.flow("out_anti_psychotic_waiting_list")
+        self.in_esketamine_waiting_list = model.flow("in_esketamine_waiting_list")
+        self.out_esketamine_waiting_list = model.flow("out_esketamine_waiting_list")
+        self.in_ect_waiting_list = model.flow("in_ect_waiting_list")
+        self.out_ect_waiting_list = model.flow("out_ect_waiting_list")
 
         # Health states
-        self.in_remission = model.stock("in_remission")
-        self.out_remission = model.stock("out_remission")
-        self.in_recovery = model.stock("in_recovery")
-        self.out_recovery = model.stock("out_recovery")
-        self.in_relapse = model.stock("in_relapse")
-        self.out_recovery = model.stock("out_recovery")
+        self.in_remission = model.flow("in_remission")
+        self.out_remission = model.flow("out_remission")
+        self.in_recovery = model.flow("in_recovery")
+        self.out_recovery = model.flow("out_recovery")
+        self.in_relapse = model.flow("in_relapse")
+        self.out_relapse = model.flow("out_relapse")
 
         # # Converters
         self.depression_treatment_demand = model.converter("depression_treatment_demand")
 
         # # Constants
-        self.mild_depression_AD_rate = model.constant("mild_depression_AD_rate")
+        self.anti_depressant_allocation_percentage = model.constant("anti_depressant_allocation_percentage")
+        self.anti_depressant_anti_psychotic_allocation_percentage = model.constant(
+            "anti_depressant_anti_psychotic_allocation_percentage")
+        self.anti_psychotic_allocation_percentage = model.constant("anti_psychotic_allocation_percentage")
+
 
         # # Equations
-        self.mild_depression_treatment_demand.equation = self.model.function("mild_depression_treatment_update",
-            lambda m, t: m.exchange["mild_depression_treatment_demand"])()
-        self.moderate_depression_treatment_demand.equation = self.model.function("moderate_depression_treatment_update",
-            lambda m, t: m.exchange["moderate_depression_treatment_demand"])()
-        self.severe_depression_treatment_demand.equation = self.model.function("severe_depression_treatment_update",
-            lambda m, t: m.exchange["severe_depression_treatment_demand"])()
+        
+        # Treatments flow
+        self.anti_depressant.equation = self.in_anti_depressant - self.out_anti_depressant
+        self.anti_depressant_anti_psychotic.equation = self.in_anti_depressant_anti_psychotic - self.out_anti_depressant_anti_psychotic
+        self.anti_psychotic.equation = self.in_anti_psychotic - self.out_anti_psychotic
+        self.esketamine.equation = self.in_esketamine - self.out_esketamine
+        self.ect.equation = self.in_ect - self.out_ect
 
-        self.AD.equation = self.AD_in - self.AD_out
-        self.AD_AP.equation = self.AD_AP_in - self.AD_AP_out
-        self.AP.equation = self.AP_in - self.AP_out
-        self.esketamine.equation = self.esketamine_in - self.esketamine_out
-        self.ECT.equation = self.ECT_in - self.ECT_out
+        # Waiting times flow
+        self.anti_depressant_waiting_list.equation = self.in_anti_depressant_waiting_list - self.out_anti_depressant_waiting_list
+        self.anti_depressant_anti_psychotic_waiting_list.equation = self.in_anti_depressant_anti_psychotic_waiting_list - self.out_anti_depressant_anti_psychotic_waiting_list
+        self.anti_psychotic_waiting_list.equation = self.in_anti_psychotic_waiting_list - self.out_anti_psychotic_waiting_list
+        self.esketamine_waiting_list.equation = self.in_esketamine_waiting_list - self.out_esketamine_waiting_list
+        self.ect_waiting_list.equation = self.in_ect_waiting_list - self.out_ect_waiting_list
 
-        self.AD_in.equation = self.mild_depression_treatment_demand * self.mild_depression_AD_rate \
-                              + self.moderate_depression_treatment_demand * self.moderate_depression_AD_rate \
-                              + self.severe_depression_treatment_demand * self.severe_depression_AD_rate
-        self.AD_AP_in.equation = self.mild_depression_treatment_demand * self.mild_depression_AD_AP_rate \
-                              + self.moderate_depression_treatment_demand * self.moderate_depression_AD_AP_rate \
-                              + self.severe_depression_treatment_demand * self.severe_depression_AD_AP_rate
-        self.AP_in.equation = self.mild_depression_treatment_demand * self.mild_depression_AP_rate \
-                              + self.moderate_depression_treatment_demand * self.moderate_depression_AP_rate \
-                              + self.severe_depression_treatment_demand * self.severe_depression_AP_rate
+        # Health states flow
+        self.remission.equation = self.in_remission - self.out_remission
+        self.recovery.equation = self.in_recovery - self.out_recovery
+        self.relapse.equation = self.in_relapse - self.out_relapse
 
-        self.AD_out.equation = self.model.function("AD_finished_treatment",
-                                                   lambda m, t: m.exchange["AD_finished_treatment"])()
-        self.AD_AP_out.equation = self.model.function("AD_AP_finished_treatment",
-                                                   lambda m, t: m.exchange["AD_AP_finished_treatment"])()
-        self.AP_out.equation = self.model.function("AP_finished_treatment",
-                                                   lambda m, t: m.exchange["AP_finished_treatment"])()
+        # Gets the demand from the AB model
+        self.depression_treatment_demand.equation = self.model.function("depression_treatment_demand_update",
+            lambda m, t: m.exchange["depression_treatment_demand"])()
 
-        self.remission.equation = self.model.function("remission_update", lambda m, t: m.exchange["remission"])()
-        self.second_line_treatment_demand.equation = self.AD_out + self.AD_AP_out + self.AP_out - self.remission
+        # These are based on Julia's percentages from the decision tree
+        self.in_anti_depressant_waiting_list.equation = self.anti_depressant_allocation_percentage * self.depression_treatment_demand
+        self.in_anti_depressant_anti_psychotic_waiting_list.equation = self.anti_depressant_anti_psychotic_allocation_percentage * self.depression_treatment_demand
+        self.in_anti_psychotic_waiting_list.equation = self.anti_psychotic_allocation_percentage * self.depression_treatment_demand
 
-        self.esketamine_in.equation = self.model.function("esketamine_flow",
-            lambda m, t: min(self.esketamine_capacity, self.second_line_treatment_demand))()
-        self.ECT_in = self.second_line_treatment_demand - self.esketamine_in
-
-        self.esketamine_out = self.model.function("esketamine_finished_treatment",
-                                    lambda m, t: m.exchange["esketamine_finished_treatment"])()
-        self.ECT_out = self.model.function("ECT_finished_treatment",
-                                    lambda m, t: m.exchange["ECT_finished_treatment"])()
+        
 
         # # Initial values
-        # self.treated.initial_value = 0.0
+        # NOTE: These values are from Julia's decision tree thingy, probably going to change
+        self.anti_depressant_allocation_percentage.equation = 59.915
+        self.anti_depressant_anti_psychotic_allocation_percentage.equation = 35.254999999999995
+        self.anti_psychotic_allocation_percentage.equation = 4.83
+
+        # self.mild_depression_treatment_demand.equation = self.model.function("mild_depression_treatment_update",
+            # lambda m, t: m.exchange["mild_depression_treatment_demand"])()
