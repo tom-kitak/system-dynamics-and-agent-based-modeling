@@ -41,7 +41,32 @@ if __name__ == "__main__":
                         }
                     }
                 }
-            ]
+            ],
+        "treatment_properties":
+            {
+                "esketamine": {
+                    "duration": 26,
+                    "cost": 10000,
+                    "response_rate": 0.784,
+                    "remission_rate": 0.472,
+                    "relapse_rate": 0.054,
+                    "suicide_rate": 0,
+                    "treatment_adherence": 0.937,
+                    "mean_delta_madrs": -16.4,
+                    "sd_delta_madrs": 8.76
+                },
+                "antipsychotic": {
+                    "duration": 4,
+                    "cost": 6000,
+                    "response_rate": 0.507,
+                    "remission_rate": 0.2978,
+                    "relapse_rate": 0.043,
+                    "suicide_rate": 0,
+                    "treatment_adherence": 0.873,
+                    "mean_delta_madrs": -15.05,
+                    "sd_delta_madrs": 0.8245
+                }
+            }
     }
 
     depression_treatment_hybrid.configure(depression_treatment_hybrid_config)

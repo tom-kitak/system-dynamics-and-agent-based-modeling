@@ -68,6 +68,10 @@ class DepressionTreatmentSystemDynamics:
             "anti_depressant_anti_psychotic_allocation_percentage")
         self.anti_psychotic_allocation_percentage = model.constant("anti_psychotic_allocation_percentage")
 
+        # Capacities
+        self.anti_depressant_capacity = model.constant("anti_depressant_capacity")
+        self.anti_depressant_anti_psychotic_capacity = model.constant("anti_depressant_anti_psychotic_capacity")
+        self.anti_psychotic_capacity = model.constant("anti_psychotic_capacity")
 
         # # Equations
         
@@ -99,7 +103,10 @@ class DepressionTreatmentSystemDynamics:
         self.in_anti_depressant_anti_psychotic_waiting_list.equation = self.anti_depressant_anti_psychotic_allocation_percentage * self.depression_treatment_demand
         self.in_anti_psychotic_waiting_list.equation = self.anti_psychotic_allocation_percentage * self.depression_treatment_demand
 
-        
+        # Starting treatment
+        self.out_anti_depressant = self.model.function("out_anti_depressant_update",
+            lambda m, t: m.exchange["out_anti_depressant"])()
+        self.in_anti_depressant = self.anti_depressant_capacity - self.anti_depressant
 
         # # Initial values
         # NOTE: These values are from Julia's decision tree thingy, probably going to change
