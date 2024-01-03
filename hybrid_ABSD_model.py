@@ -55,12 +55,12 @@ class DepressionTreatmentHybridABSD(Model):
         in_ect_waiting_list = 0
         in_antidepressant_waiting_list = 0
 
-        update_antidepressant_waiting_list = int(self.evaluate_equation("antidepressant_waiting_list", time))
-        update_antidepressant_antipsychotic_waiting_list = int(self.evaluate_equation("antidepressant_antipsychotic_waiting_list", time))
-        update_anti_antipsychotic_waiting_list = int(self.evaluate_equation("antipsychotic_waiting_list", time))
-        update_in_antidepressant = int(self.evaluate_equation("in_antidepressant", time))
-        update_in_antidepressant_antipsychotic = int(self.evaluate_equation("in_antidepressant_antipsychotic", time))
-        update_in_antipsychotic = int(self.evaluate_equation("in_antipsychotic", time))
+        update_antidepressant_waiting_list = round(self.evaluate_equation("antidepressant_waiting_list", time))
+        update_antidepressant_antipsychotic_waiting_list = round(self.evaluate_equation("antidepressant_antipsychotic_waiting_list", time))
+        update_anti_antipsychotic_waiting_list = round(self.evaluate_equation("antipsychotic_waiting_list", time))
+        update_in_antidepressant = round(self.evaluate_equation("in_antidepressant", time))
+        update_in_antidepressant_antipsychotic = round(self.evaluate_equation("in_antidepressant_antipsychotic", time))
+        update_in_antipsychotic = round(self.evaluate_equation("in_antipsychotic", time))
 
         shuffled_agents = np.random.permutation(self.agents)
 

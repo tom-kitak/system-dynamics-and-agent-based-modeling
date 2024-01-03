@@ -104,10 +104,10 @@ class DepressionTreatmentSystemDynamics:
 
         # These are based on Julia's percentages from the decision tree
         # Enter first-line waiting lists
-        # TODO: wire out from ect back
-        # self.in_antidepressant_waiting_list.equation = self.model.function("in_antidepressant_waiting_list_update",
-        #     lambda m, t: m.exchange["in_antidepressant_waiting_list"] + self.antidepressant_allocation_percentage * self.depression_treatment_demand)()
-        self.in_antidepressant_waiting_list.equation = self.antidepressant_allocation_percentage * self.depression_treatment_demand
+        self.in_antidepressant_waiting_list.equation = self.model.function("in_antidepressant_waiting_list_update",
+            lambda m, t, antidepressant_allocation_percentage, depression_treatment_demand:
+            m.exchange["in_antidepressant_waiting_list"] +
+            antidepressant_allocation_percentage * depression_treatment_demand)(self.antidepressant_allocation_percentage, self.depression_treatment_demand)
         self.in_antidepressant_antipsychotic_waiting_list.equation = self.antidepressant_antipsychotic_allocation_percentage * self.depression_treatment_demand
         self.in_antipsychotic_waiting_list.equation = self.antipsychotic_allocation_percentage * self.depression_treatment_demand
 
