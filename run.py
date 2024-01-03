@@ -22,24 +22,13 @@ if __name__ == "__main__":
                     {
                         "type": "Double",
                         "value": 0.5
-                    },
-                "enter_treatment_rate":
-                    {
-                        "type": "Double",
-                        "value": 0.8
-                    },
+                    }
             },
         "agents":
             [
                 {
                     "name": "person",
-                    "count": 100,
-                    "properties": {
-                        "monetary_cost": {
-                            "type": "Integer",
-                            "value": 0
-                        }
-                    }
+                    "count": 10,
                 }
             ],
         "treatment_properties":

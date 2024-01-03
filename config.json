@@ -1,0 +1,86 @@
+{
+        "runspecs": {
+            "starttime": 1,
+            "stoptime": 10,
+            "dt": 1.0
+        },
+        "properties":
+            {
+                "treatment_success_rate":
+                    {
+                        "type": "Double",
+                        "value": 0.5
+                    }
+            },
+        "agents":
+            [
+                {
+                    "name": "person",
+                    "count": 10,
+                    "properties": {
+                        "monetary_cost": {
+                            "type": "Integer",
+                            "value": 0
+                        }
+                    }
+                }
+            ],
+        "treatment_properties":
+            {
+                "esketamine": {
+                    "duration": 26,
+                    "cost": 10000,
+                    "response_rate": 0.784,
+                    "remission_rate": 0.472,
+                    "relapse_rate": 0.054,
+                    "suicide_rate": 0,
+                    "treatment_adherence": 0.937,
+                    "mean_delta_madrs": -16.4,
+                    "sd_delta_madrs": 8.76
+                },
+                "antipsychotic": {
+                    "duration": 4,
+                    "cost": 6000,
+                    "response_rate": 0.507,
+                    "remission_rate": 0.2978,
+                    "relapse_rate": 0.043,
+                    "suicide_rate": 0,
+                    "treatment_adherence": 0.873,
+                    "mean_delta_madrs": -15.05,
+                    "sd_delta_madrs": 0.8245
+                },
+                "antidepressant_antipsychotic": {
+                    "duration": 4,
+                    "cost": 7200,
+                    "response_rate": 0.524,
+                    "remission_rate": 0.3886,
+                    "relapse_rate": 0.035,
+                    "suicide_rate": 0,
+                    "treatment_adherence": 0.9355,
+                    "mean_delta_madrs": -16.15,
+                    "sd_delta_madrs": 0.8115
+                },
+                "antidepressant": {
+                    "duration": 4,
+                    "cost": 5000,
+                    "response_rate": 0.402,
+                    "remission_rate": 0.34,
+                    "relapse_rate": 0.055,
+                    "suicide_rate": 0,
+                    "treatment_adherence": 0.944,
+                    "mean_delta_madrs": -13,
+                    "sd_delta_madrs": 3.5
+                },
+                "ect": {
+                    "duration": 4,
+                    "cost": 8000,
+                    "response_rate": 0.414,
+                    "remission_rate": 0.591,
+                    "relapse_rate": 0.015,
+                    "suicide_rate": 0,
+                    "treatment_adherence": 0.874,
+                    "mean_delta_madrs": -15.5,
+                    "sd_delta_madrs": 4
+                }
+            }
+    }

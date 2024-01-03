@@ -1,3 +1,4 @@
+from BPTK_Py import sd_functions as sd
 
 
 class DepressionTreatmentSystemDynamics:
@@ -72,6 +73,8 @@ class DepressionTreatmentSystemDynamics:
         self.antidepressant_capacity = model.constant("antidepressant_capacity")
         self.antidepressant_antipsychotic_capacity = model.constant("antidepressant_antipsychotic_capacity")
         self.antipsychotic_capacity = model.constant("antipsychotic_capacity")
+        self.esketamine_capacity = model.constant("esketamine_capacity")
+        self.ect_capacity = model.constant("ect_capacity")
 
         # # Equations
         
@@ -94,25 +97,72 @@ class DepressionTreatmentSystemDynamics:
         self.recovery.equation = self.in_recovery - self.out_recovery
         self.relapse.equation = self.in_relapse - self.out_relapse
 
+        # Interesting part:
         # Gets the demand from the AB model
         self.depression_treatment_demand.equation = self.model.function("depression_treatment_demand_update",
             lambda m, t: m.exchange["depression_treatment_demand"])()
 
         # These are based on Julia's percentages from the decision tree
+        # Enter first-line waiting lists
+        # TODO: wire out from ect back
+        # self.in_antidepressant_waiting_list.equation = self.model.function("in_antidepressant_waiting_list_update",
+        #     lambda m, t: m.exchange["in_antidepressant_waiting_list"] + self.antidepressant_allocation_percentage * self.depression_treatment_demand)()
         self.in_antidepressant_waiting_list.equation = self.antidepressant_allocation_percentage * self.depression_treatment_demand
         self.in_antidepressant_antipsychotic_waiting_list.equation = self.antidepressant_antipsychotic_allocation_percentage * self.depression_treatment_demand
         self.in_antipsychotic_waiting_list.equation = self.antipsychotic_allocation_percentage * self.depression_treatment_demand
 
-        # Starting treatment
-        self.out_antidepressant = self.model.function("out_antidepressant_update",
+        # Starting first-line treatment
+        self.out_antidepressant_waiting_list.equation = sd.min(self.antidepressant_waiting_list, self.antidepressant_capacity - self.antidepressant)
+        self.in_antidepressant.equation = self.out_antidepressant_waiting_list
+
+        self.out_antidepressant_antipsychotic_waiting_list.equation = sd.min(self.antidepressant_antipsychotic_waiting_list, self.antidepressant_antipsychotic_capacity - self.antidepressant_antipsychotic)
+        self.in_antidepressant_antipsychotic.equation = self.out_antidepressant_antipsychotic_waiting_list
+
+        self.out_antipsychotic_waiting_list.equation = sd.min(self.antipsychotic_waiting_list, self.antipsychotic_capacity - self.antipsychotic)
+        self.in_antipsychotic.equation = self.out_antipsychotic_waiting_list
+
+        # Exit first-line treatment
+        self.out_antidepressant.equation = self.model.function("out_antidepressant_update",
             lambda m, t: m.exchange["out_antidepressant"])()
-        self.in_antidepressant = self.antidepressant_capacity - self.antidepressant
+        self.out_antidepressant_antipsychotic.equation = self.model.function("out_antidepressant_antipsychotic_update",
+            lambda m, t: m.exchange["out_antidepressant_antipsychotic"])()
+        self.out_antipsychotic.equation = self.model.function("out_antidepressant_antipsychotic_update",
+            lambda m, t: m.exchange["out_antipsychotic"])()
+
+        # Enter second-line waiting list
+        self.in_esketamine_waiting_list.equation = self.model.function("in_esketamine_waiting_list_update",
+            lambda m, t: m.exchange["in_esketamine_waiting_list"])()
+
+        # Start second-line treatment
+        self.out_esketamine_waiting_list.equation = sd.min(self.esketamine_waiting_list, self.esketamine_capacity - self.esketamine)
+        self.in_esketamine.equation = self.out_esketamine_waiting_list
+
+        # Exit second-line treatment
+        self.out_esketamine.equation = self.model.function("out_esketamine_update",
+            lambda m, t: m.exchange["out_esketamine"])()
+
+        # Enter third-line waiting list
+        self.in_ect_waiting_list.equation = self.model.function("in_ect_waiting_list_update",
+            lambda m, t: m.exchange["in_ect_waiting_list"])()
+
+        # Start third-line treatment
+        self.out_ect_waiting_list.equation = sd.min(self.ect_waiting_list, self.ect_capacity - self.ect)
+        self.in_ect.equation = self.out_ect_waiting_list
+
+        # Exit third-line treatment
+        self.out_ect.equation = self.model.function("out_ect_update",
+            lambda m, t: m.exchange["out_ect"])()
+
+        # Enter remission
+        self.in_remission.equation = self.model.function("in_remission_update",
+            lambda m, t: m.exchange["in_remission"])()
+
+        # Exit remission
+        self.out_remission.equation = self.model.function("out_remission_update",
+            lambda m, t: m.exchange["out_remission"])()
 
         # # Initial values
         # NOTE: These values are from Julia's decision tree thingy, probably going to change
-        self.antidepressant_allocation_percentage.equation = 59.915
-        self.antidepressant_antipsychotic_allocation_percentage.equation = 35.254999999999995
-        self.antipsychotic_allocation_percentage.equation = 4.83
-
-        # self.mild_depression_treatment_demand.equation = self.model.function("mild_depression_treatment_update",
-            # lambda m, t: m.exchange["mild_depression_treatment_demand"])()
+        self.antidepressant_allocation_percentage.equation = 0.59915
+        self.antidepressant_antipsychotic_allocation_percentage.equation = 0.35254999999999995
+        self.antipsychotic_allocation_percentage.equation = 0.0483
