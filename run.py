@@ -42,7 +42,8 @@ if __name__ == "__main__":
                     "suicide_rate": 0,
                     "treatment_adherence": 0.937,
                     "mean_delta_madrs": -16.4,
-                    "sd_delta_madrs": 8.76
+                    "sd_delta_madrs": 8.76,
+                    "capacity": 10
                 },
                 "antipsychotic": {
                     "duration": 4,
@@ -53,7 +54,8 @@ if __name__ == "__main__":
                     "suicide_rate": 0,
                     "treatment_adherence": 0.873,
                     "mean_delta_madrs": -15.05,
-                    "sd_delta_madrs": 0.8245
+                    "sd_delta_madrs": 0.8245,
+                    "capacity": 10
                 },
                 "antidepressant_antipsychotic": {
                     "duration": 4, 
@@ -64,7 +66,8 @@ if __name__ == "__main__":
                     "suicide_rate": 0, 
                     "treatment_adherence": 0.9355, 
                     "mean_delta_madrs": -16.15, 
-                    "sd_delta_madrs": 0.8115 
+                    "sd_delta_madrs": 0.8115,
+                    "capacity": 10
                 },
                 "antidepressant": {
                     "duration": 4, 
@@ -75,7 +78,8 @@ if __name__ == "__main__":
                     "suicide_rate": 0, 
                     "treatment_adherence": 0.944, 
                     "mean_delta_madrs": -13, 
-                    "sd_delta_madrs": 3.5 
+                    "sd_delta_madrs": 3.5,
+                    "capacity": 10
                 },
                 "ect": {
                     "duration": 4, 
@@ -86,7 +90,8 @@ if __name__ == "__main__":
                     "suicide_rate": 0, 
                     "treatment_adherence": 0.874, 
                     "mean_delta_madrs": -15.5, 
-                    "sd_delta_madrs": 4 
+                    "sd_delta_madrs": 4,
+                    "capacity": 10
                 }
             }
     }

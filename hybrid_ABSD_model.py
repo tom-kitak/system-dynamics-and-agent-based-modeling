@@ -34,7 +34,11 @@ class DepressionTreatmentHybridABSD(Model):
         self.sd_model = DepressionTreatmentSystemDynamics(self)
         self.treatment_properties = config["treatment_properties"]
 
-        # self.sd_model.treatment_success_rate.equation = self.treatment_success_rate
+        self.sd_model.antidepressant_capacity.equation = self.treatment_properties["antidepressant"]["capacity"]
+        self.sd_model.antidepressant_antipsychotic_capacity.equation = self.treatment_properties["antidepressant_antipsychotic"]["capacity"]
+        self.sd_model.antipsychotic_capacity.equation = self.treatment_properties["antipsychotic"]["capacity"]
+        self.sd_model.esketamine_capacity.equation = self.treatment_properties["esketamine"]["capacity"]
+        self.sd_model.ect_capacity.equation = self.treatment_properties["ect"]["capacity"]
 
     def end_round(self, time, sim_round, step):
 
@@ -51,8 +55,7 @@ class DepressionTreatmentHybridABSD(Model):
         in_ect_waiting_list = 0
         in_antidepressant_waiting_list = 0
 
-        # TODO: why can't I use int()
-        update_antidepressant_waiting_list = self.evaluate_equation("antidepressant_waiting_list", time)
+        update_antidepressant_waiting_list = int(self.evaluate_equation("antidepressant_waiting_list", time))
         update_antidepressant_antipsychotic_waiting_list = int(self.evaluate_equation("antidepressant_antipsychotic_waiting_list", time))
         update_anti_antipsychotic_waiting_list = int(self.evaluate_equation("antipsychotic_waiting_list", time))
         update_in_antidepressant = int(self.evaluate_equation("in_antidepressant", time))
