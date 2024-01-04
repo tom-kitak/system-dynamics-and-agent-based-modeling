@@ -31,6 +31,7 @@ if __name__ == "__main__":
                     "count": 10,
                 }
             ],
+        "new_patients_per_week": 5,
         "treatment_properties":
             {
                 "esketamine": {

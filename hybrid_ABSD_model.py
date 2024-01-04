@@ -33,6 +33,7 @@ class DepressionTreatmentHybridABSD(Model):
         super().configure(config)
         self.sd_model = DepressionTreatmentSystemDynamics(self)
         self.treatment_properties = config["treatment_properties"]
+        self.new_patients_per_week = config["new_patients_per_week"]
 
         self.sd_model.antidepressant_capacity.equation = self.treatment_properties["antidepressant"]["capacity"]
         self.sd_model.antidepressant_antipsychotic_capacity.equation = self.treatment_properties["antidepressant_antipsychotic"]["capacity"]
@@ -157,6 +158,7 @@ class DepressionTreatmentHybridABSD(Model):
             elif agent.state == "remission":
                 agent.in_remission_time += 1
 
+                # TODO: Add baseline relapse rate
                 # Note: relapse probability formula is obtained from https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5684279/
                 relapse_probability = 1 / np.exp(7 * agent.in_remission_time)
 
@@ -180,3 +182,5 @@ class DepressionTreatmentHybridABSD(Model):
         self.exchange["in_esketamine_waiting_list"] = in_esketamine_waiting_list
         self.exchange["in_ect_waiting_list"] = in_ect_waiting_list
         self.exchange["in_antidepressant_waiting_list"] = in_antidepressant_waiting_list
+
+        self.create_agents({"name": "person", "count": self.new_patients_per_week})
