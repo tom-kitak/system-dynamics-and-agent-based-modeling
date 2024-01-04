@@ -1,12 +1,13 @@
 from BPTK_Py import DataCollector
 from BPTK_Py import SimultaneousScheduler
+from data_collection import PatientDataCollector
 from hybrid_ABSD_model import DepressionTreatmentHybridABSD
 
 
 if __name__ == "__main__":
     depression_treatment_hybrid = DepressionTreatmentHybridABSD(name="Depression treatment",
                                                                 scheduler=SimultaneousScheduler(),
-                                                                data_collector=DataCollector())
+                                                                data_collector=PatientDataCollector())
 
     depression_treatment_hybrid.instantiate_model()
 
@@ -100,8 +101,15 @@ if __name__ == "__main__":
     depression_treatment_hybrid.configure(depression_treatment_hybrid_config)
     depression_treatment_hybrid.run()
 
+    # results = depression_treatment_hybrid.statistics()
+
     results = depression_treatment_hybrid.statistics()
 
+    # print(results)
+
     for t, r in results.items():
-        r = dict(sorted(r["person"].items()))
-        print(f"T:{t}={r}")
+        print(f"T:{t}={r['monetary_cost']}")
+
+    # for t, r in results.items():
+    #     r = dict(sorted(r["person"].items()))
+    #     print(f"T:{t}={r}")
