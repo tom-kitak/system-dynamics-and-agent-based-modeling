@@ -56,13 +56,12 @@ class DepressionTreatmentHybridABSD(Model):
         in_ect_waiting_list = 0
         in_antidepressant_waiting_list = 0
 
-        update_in_antidepressant = round(self.evaluate_equation("in_antidepressant", time))
-        update_in_antidepressant_antipsychotic = round(self.evaluate_equation("in_antidepressant_antipsychotic", time))
-        update_in_antipsychotic = round(self.evaluate_equation("in_antipsychotic", time))
+        update_in_antidepressant = self.evaluate_equation("in_antidepressant", time)
+        update_in_antidepressant_antipsychotic = self.evaluate_equation("in_antidepressant_antipsychotic", time)
+        update_in_antipsychotic = self.evaluate_equation("in_antipsychotic", time)
 
-        update_in_esketamine = round(self.evaluate_equation("in_esketamine", time))
-        update_in_ect = round(self.evaluate_equation("in_ect", time))
-
+        update_in_esketamine = self.evaluate_equation("in_esketamine", time)
+        update_in_ect = self.evaluate_equation("in_ect", time)
 
         update_values = {
             'antidepressant_waiting_list': self.evaluate_equation("antidepressant_waiting_list", time),
