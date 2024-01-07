@@ -1,6 +1,3 @@
-from collections import defaultdict
-
-
 class PatientDataCollector:
 
     def __init__(self):
@@ -13,24 +10,6 @@ class PatientDataCollector:
         self.event_statistics = {}
         self.aggregated_statistics = {}
 
-    # def record_event(self, time, event):
-    #     """
-    #     Record an event
-
-    #     Parameters:
-    #         time: Timestep.
-    #             The time at which to record the event.
-    #         event: event instance
-    #             The event to record.
-    #     """
-    #     if time not in self.event_statistics:
-    #         self.event_statistics[time] = {}
-
-    #     if event.name not in self.event_statistics[time]:
-    #         self.event_statistics[time][event.name] = 0
-
-    #     self.event_statistics[time][event.name] += 1
-
     def collect_agent_statistics(self, time, agents):
         """
         Collect agent statistics from agent(s).
@@ -42,11 +21,32 @@ class PatientDataCollector:
                 The list of agents to collect.
         """
         self.agent_statistics[time] = {}
-        self.aggregated_statistics[time] = defaultdict(int)
+        self.aggregated_statistics[time] = {}
+
+        self.aggregated_statistics[time]["total_monetary_cost"] = 0
+
+        self.aggregated_statistics[time]["waiting_list_count"] = {}
+        self.aggregated_statistics[time]["waiting_list_count"]["antidepressant_waiting_list"] = 0
+        self.aggregated_statistics[time]["waiting_list_count"]["antidepressant_antipsychotic_waiting_list"] = 0
+        self.aggregated_statistics[time]["waiting_list_count"]["antipsychotic_waiting_list"] = 0
+        self.aggregated_statistics[time]["waiting_list_count"]["esketamine_waiting_list"] = 0
+        self.aggregated_statistics[time]["waiting_list_count"]["ect_waiting_list"] = 0
+
+        self.aggregated_statistics[time]["percentage_in_remission"] = 0.0
+        self.aggregated_statistics[time]["num_in_remission"] = 0
 
         for agent in agents:
 
-            self.aggregated_statistics[time]["monetary_cost"] += agent.monetary_cost
+            # Collect number of patients in waiting list
+            if "waiting_list" in agent.state:
+                self.aggregated_statistics[time]["waiting_list_count"][agent.state] += 1
+
+            # Collect percentage of patients in remission
+            if "remission" in agent.state:
+                self.aggregated_statistics[time]["num_in_remission"] += 1
+
+            # Collect total monetary cost of the entire system
+            self.aggregated_statistics[time]["total_monetary_cost"] += agent.monetary_cost
 
             if agent.agent_type not in self.agent_statistics[time]:
                 self.agent_statistics[time][agent.agent_type] = {}
@@ -92,20 +92,12 @@ class PatientDataCollector:
                                                                  [agent.state][agent_property_name]["min"],
                                                                  agent_property_value["value"]))
 
+        self.aggregated_statistics[time]["percentage_in_remission"] = self.aggregated_statistics[time]["num_in_remission"] / len(agents)
+
 
     def statistics(self):
         """
         Get the statistics collected.
-
-        Returns:
-            A dictionary with the data that was collected.
-        """
-
-        return self.aggregated_statistics
-
-    def agg_statistics(self):
-        """
-        Get the aggregated statistics collected.
 
         Returns:
             A dictionary with the data that was collected.

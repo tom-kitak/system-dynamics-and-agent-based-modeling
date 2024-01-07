@@ -11,6 +11,7 @@ if __name__ == "__main__":
 
     depression_treatment_hybrid.instantiate_model()
 
+    # TODO: load it from a .json file
     depression_treatment_hybrid_config = {
         "runspecs": {
             "starttime": 1,
@@ -100,8 +101,6 @@ if __name__ == "__main__":
 
     depression_treatment_hybrid.configure(depression_treatment_hybrid_config)
     depression_treatment_hybrid.run()
-
-    # results = depression_treatment_hybrid.statistics()
 
     results = depression_treatment_hybrid.statistics()
 
