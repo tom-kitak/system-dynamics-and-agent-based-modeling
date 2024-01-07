@@ -7,15 +7,15 @@ from hybrid_ABSD_model import DepressionTreatmentHybridABSD
 if __name__ == "__main__":
     depression_treatment_hybrid = DepressionTreatmentHybridABSD(name="Depression treatment",
                                                                 scheduler=SimultaneousScheduler(),
-                                                                data_collector=PatientDataCollector())
+                                                                data_collector=DataCollector())
 
     depression_treatment_hybrid.instantiate_model()
 
-    # TODO: load it from a .json file
+    # TODO:LOW load it from a .json file
     depression_treatment_hybrid_config = {
         "runspecs": {
             "starttime": 1,
-            "stoptime": 10,
+            "stoptime": 30,
             "dt": 1.0
         },
         "properties":
@@ -30,14 +30,14 @@ if __name__ == "__main__":
             [
                 {
                     "name": "person",
-                    "count": 10,
+                    "count": 100,
                 }
             ],
         "new_patients_per_week": 5,
         "treatment_properties":
             {
                 "esketamine": {
-                    "duration": 26,
+                    "duration": 6,
                     "cost": 10000,
                     "response_rate": 0.784,
                     "remission_rate": 0.472,
@@ -106,9 +106,16 @@ if __name__ == "__main__":
 
     # print(results)
 
-    for t, r in results.items():
-        print(f"T:{t}={r['monetary_cost']}")
-
     # for t, r in results.items():
-    #     r = dict(sorted(r["person"].items()))
-    #     print(f"T:{t}={r}")
+    #     # print(f"T:{t}={r['total_monetary_cost']}")
+    #     print(f"T:{t}={r['waiting_list_count']}")
+
+    print("------------")
+
+    for t, r in results.items():
+        r = dict(sorted(r["person"].items()))
+        print(f"T:{t}={r}")
+        count = 0
+        for treatment, count_dict in r.items():
+            count += count_dict["count"]
+        print(count)

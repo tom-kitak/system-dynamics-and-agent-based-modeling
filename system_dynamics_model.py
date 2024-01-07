@@ -22,8 +22,6 @@ class DepressionTreatmentSystemDynamics:
 
         # Health states
         self.remission = model.stock("remission")
-        self.recovery = model.stock("recovery")
-        self.relapse = model.stock("relapse")
 
         # # Flows
         # Treatments
@@ -55,10 +53,6 @@ class DepressionTreatmentSystemDynamics:
         # Health states
         self.in_remission = model.flow("in_remission")
         self.out_remission = model.flow("out_remission")
-        self.in_recovery = model.flow("in_recovery")
-        self.out_recovery = model.flow("out_recovery")
-        self.in_relapse = model.flow("in_relapse")
-        self.out_relapse = model.flow("out_relapse")
 
         # # Converters
         self.depression_treatment_demand = model.converter("depression_treatment_demand")
@@ -94,8 +88,6 @@ class DepressionTreatmentSystemDynamics:
 
         # Health states flow
         self.remission.equation = self.in_remission - self.out_remission
-        self.recovery.equation = self.in_recovery - self.out_recovery
-        self.relapse.equation = self.in_relapse - self.out_relapse
 
         # Interesting part:
         # Gets the demand from the AB model
@@ -163,6 +155,7 @@ class DepressionTreatmentSystemDynamics:
 
         # # Initial values
         # NOTE: These values are from Julia's decision tree thingy, probably going to change
-        self.antidepressant_allocation_percentage.equation = 0.59915
-        self.antidepressant_antipsychotic_allocation_percentage.equation = 0.35254999999999995
-        self.antipsychotic_allocation_percentage.equation = 0.0483
+        # TODO:LOW don't use hard cutoffs because then AP can only be  seen when there are more than 20 patients per week
+        self.antidepressant_allocation_percentage.equation = 0.60
+        self.antidepressant_antipsychotic_allocation_percentage.equation = 0.35
+        self.antipsychotic_allocation_percentage.equation = 0.05

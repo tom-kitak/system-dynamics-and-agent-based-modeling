@@ -56,51 +56,78 @@ class DepressionTreatmentHybridABSD(Model):
         in_ect_waiting_list = 0
         in_antidepressant_waiting_list = 0
 
-        update_antidepressant_waiting_list = round(self.evaluate_equation("antidepressant_waiting_list", time))
-        update_antidepressant_antipsychotic_waiting_list = round(self.evaluate_equation("antidepressant_antipsychotic_waiting_list", time))
-        update_anti_antipsychotic_waiting_list = round(self.evaluate_equation("antipsychotic_waiting_list", time))
         update_in_antidepressant = round(self.evaluate_equation("in_antidepressant", time))
         update_in_antidepressant_antipsychotic = round(self.evaluate_equation("in_antidepressant_antipsychotic", time))
         update_in_antipsychotic = round(self.evaluate_equation("in_antipsychotic", time))
 
-        shuffled_agents = np.random.permutation(self.agents)
+        update_in_esketamine = round(self.evaluate_equation("in_esketamine", time))
+        update_in_ect = round(self.evaluate_equation("in_ect", time))
 
-        for agent in shuffled_agents:
+
+        update_values = {
+            'antidepressant_waiting_list': self.evaluate_equation("antidepressant_waiting_list", time),
+            'antidepressant_antipsychotic_waiting_list': self.evaluate_equation("antidepressant_antipsychotic_waiting_list", time),
+            'antipsychotic_waiting_list': self.evaluate_equation("antipsychotic_waiting_list", time)
+        }
+
+        for agent in self.agents:
+
             if agent.state == "untreated":
-                depression_treatment_demand += 1
 
-                if update_antidepressant_waiting_list > 0:
-                    agent.state = "antidepressant_waiting_list"
-                    agent.waiting_time = 0
-                    update_antidepressant_waiting_list -= 1
-                elif update_antidepressant_antipsychotic_waiting_list > 0:
-                    agent.state = "antidepressant_antipsychotic_waiting_list"
-                    agent.waiting_time = 0
-                    update_antidepressant_antipsychotic_waiting_list -= 1
-                elif update_anti_antipsychotic_waiting_list > 0:
-                    agent.state = "antipsychotic_waiting_list"
-                    agent.waiting_time = 0
-                    update_anti_antipsychotic_waiting_list -= 1
-            elif "waiting_list" in agent.state:
-                agent.waiting_time += 1
+                conditions_actions = [
+                    (lambda: update_values['antidepressant_waiting_list'] > 0,
+                     lambda: self.set_agent_state(agent, "antidepressant_waiting_list", update_values)),
+                    (lambda: update_values['antidepressant_antipsychotic_waiting_list'] > 0,
+                     lambda: self.set_agent_state(agent, "antidepressant_antipsychotic_waiting_list", update_values)),
+                    (lambda: update_values['antipsychotic_waiting_list'] > 0,
+                     lambda: self.set_agent_state(agent, "antipsychotic_waiting_list", update_values))
+                ]
+                random.shuffle(conditions_actions)
+
+                # Iterate and execute the first true condition
+                for condition, action in conditions_actions:
+                    if condition():
+                        action()
+                        break
+                else:
+                    depression_treatment_demand += 1
+
+            if "waiting_list" in agent.state:
                 if agent.state == "antidepressant_waiting_list" and update_in_antidepressant > 0:
                     agent.state = "antidepressant"
                     agent.total_waiting_time += agent.waiting_time
                     agent.waiting_time = 0
                     agent.in_treatment_time = 0
+                    update_in_antidepressant -= 1
                 elif agent.state == "antidepressant_antipsychotic_waiting_list" and update_in_antidepressant_antipsychotic > 0:
                     agent.state = "antidepressant_antipsychotic"
                     agent.total_waiting_time += agent.waiting_time
                     agent.waiting_time = 0
                     agent.in_treatment_time = 0
+                    update_in_antidepressant_antipsychotic -= 1
                 elif agent.state == "antipsychotic_waiting_list" and update_in_antipsychotic > 0:
                     agent.state = "antipsychotic"
                     agent.total_waiting_time += agent.waiting_time
                     agent.waiting_time = 0
                     agent.in_treatment_time = 0
+                    update_in_antipsychotic -= 1
+                elif agent.state == "esketamine_waiting_list" and update_in_esketamine > 0:
+                    agent.state = "esketamine"
+                    agent.total_waiting_time += agent.waiting_time
+                    agent.waiting_time = 0
+                    agent.in_treatment_time = 0
+                    update_in_esketamine -= 1
+                elif agent.state == "ect_waiting_list" and update_in_ect > 0:
+                    agent.state = "ect"
+                    agent.total_waiting_time += agent.waiting_time
+                    agent.waiting_time = 0
+                    agent.in_treatment_time = 0
+                    update_in_ect -= 1
+                else:
+                    agent.waiting_time += 1
             elif agent.state in self.treatments:
                 agent.in_treatment_time += 1
-                if agent.in_treatment_time == self.treatment_properties[agent.state]["duration"]:
+                if agent.in_treatment_time >= self.treatment_properties[agent.state]["duration"]:
                     agent.in_treatment_time = 0
                     agent.treatment_history.append(agent.state)
                     agent.monetary_cost += self.treatment_properties[agent.state]["cost"]
@@ -158,9 +185,9 @@ class DepressionTreatmentHybridABSD(Model):
             elif agent.state == "remission":
                 agent.in_remission_time += 1
 
-                # TODO: Add baseline relapse rate
+                # TODO: Add relapse function
                 # Note: relapse probability formula is obtained from https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5684279/
-                relapse_probability = 1 / np.exp(7 * agent.in_remission_time)
+                relapse_probability = 0.2 - (1 / np.exp(7 * agent.in_remission_time))
 
                 if random.random() < relapse_probability:
                     # Relapse occurs -> Back to the start of the pipeline
@@ -184,3 +211,8 @@ class DepressionTreatmentHybridABSD(Model):
         self.exchange["in_antidepressant_waiting_list"] = in_antidepressant_waiting_list
 
         self.create_agents({"name": "person", "count": self.new_patients_per_week})
+
+    def set_agent_state(self, agent, state, update_values):
+        agent.state = state
+        agent.waiting_time = 0
+        update_values[state] -= 1
