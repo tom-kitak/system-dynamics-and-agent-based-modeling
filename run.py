@@ -4,13 +4,14 @@ from data_collection import PatientDataCollector
 from hybrid_ABSD_model import DepressionTreatmentHybridABSD
 import json
 import os
+import plotter
 
 
 if __name__ == "__main__":
     config_file = 'config.json'
     depression_treatment_hybrid = DepressionTreatmentHybridABSD(name="Depression treatment",
                                                                 scheduler=SimultaneousScheduler(),
-                                                                data_collector=DataCollector())
+                                                                data_collector=PatientDataCollector())
 
     depression_treatment_hybrid.instantiate_model()
 
@@ -25,18 +26,17 @@ if __name__ == "__main__":
 
     results = depression_treatment_hybrid.statistics()
 
-    # print(results)
+    # for t, r in results.items():
+    #     print(f"T:{t}={r['total_monetary_cost']}")
+
+    plotter.plot_num_of_people_on_waiting_list(results)
+    plotter.plot_percentage_in_remission(results)
+    plotter.plot_total_monetary_cost(results)
 
     # for t, r in results.items():
-    #     # print(f"T:{t}={r['total_monetary_cost']}")
-    #     print(f"T:{t}={r['waiting_list_count']}")
-
-    print("------------")
-
-    for t, r in results.items():
-        r = dict(sorted(r["person"].items()))
-        print(f"T:{t}={r}")
-        count = 0
-        for treatment, count_dict in r.items():
-            count += count_dict["count"]
-        print(count)
+    #     r = dict(sorted(r["person"].items()))
+    #     print(f"T:{t}={r}")
+    #     count = 0
+    #     for treatment, count_dict in r.items():
+    #         count += count_dict["count"]
+    #     print(count)
