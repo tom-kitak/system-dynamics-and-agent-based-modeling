@@ -118,7 +118,7 @@ class DepressionTreatmentSystemDynamics:
             lambda m, t: m.exchange["out_antidepressant"])()
         self.out_antidepressant_antipsychotic.equation = self.model.function("out_antidepressant_antipsychotic_update",
             lambda m, t: m.exchange["out_antidepressant_antipsychotic"])()
-        self.out_antipsychotic.equation = self.model.function("out_antidepressant_antipsychotic_update",
+        self.out_antipsychotic.equation = self.model.function("out_antipsychotic_update",
             lambda m, t: m.exchange["out_antipsychotic"])()
 
         # Enter second-line waiting list

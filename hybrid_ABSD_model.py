@@ -56,29 +56,43 @@ class DepressionTreatmentHybridABSD(Model):
         in_ect_waiting_list = 0
         in_antidepressant_waiting_list = 0
 
-        update_in_antidepressant = self.evaluate_equation("in_antidepressant", time)
-        update_in_antidepressant_antipsychotic = self.evaluate_equation("in_antidepressant_antipsychotic", time)
-        update_in_antipsychotic = self.evaluate_equation("in_antipsychotic", time)
+        update_in_antidepressant = round(self.evaluate_equation("in_antidepressant", time))
+        update_in_antidepressant_antipsychotic = round(self.evaluate_equation("in_antidepressant_antipsychotic", time))
+        update_in_antipsychotic = round(self.evaluate_equation("in_antipsychotic", time))
 
-        update_in_esketamine = self.evaluate_equation("in_esketamine", time)
-        update_in_ect = self.evaluate_equation("in_ect", time)
+        update_in_esketamine = round(self.evaluate_equation("in_esketamine", time))
+        update_in_ect = round(self.evaluate_equation("in_ect", time))
 
         update_values = {
-            'antidepressant_waiting_list': self.evaluate_equation("antidepressant_waiting_list", time),
-            'antidepressant_antipsychotic_waiting_list': self.evaluate_equation("antidepressant_antipsychotic_waiting_list", time),
-            'antipsychotic_waiting_list': self.evaluate_equation("antipsychotic_waiting_list", time)
+            'in_antidepressant_waiting_list': round(self.evaluate_equation("in_antidepressant_waiting_list", time)),
+            'in_antidepressant_antipsychotic_waiting_list': round(self.evaluate_equation("in_antidepressant_antipsychotic_waiting_list", time)),
+            'in_antipsychotic_waiting_list': round(self.evaluate_equation("in_antipsychotic_waiting_list", time))
         }
+
+        # Debugging START
+        # if time != 1.0:
+        #     print(DepressionTreatmentHybridABSD.format_stats(self.statistics(), float(time) - 1.0))
+
+        # print("TIME:", time)
+        # print("in_antipsychotic_waiting_list", self.evaluate_equation("in_antipsychotic_waiting_list", time))
+        # print("antipsychotic_waiting_list", self.evaluate_equation("antipsychotic_waiting_list", time))
+        # print("in_antipsychotic", self.evaluate_equation("in_antipsychotic", time))
+        # print("antipsychotic", self.evaluate_equation("antipsychotic", time))
+        # print("out_antipsychotic", self.evaluate_equation("out_antipsychotic", time))
+
+        # print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
+        # Debugging END
 
         for agent in self.agents:
 
             if agent.state == "untreated":
 
                 conditions_actions = [
-                    (lambda: update_values['antidepressant_waiting_list'] > 0,
+                    (lambda: update_values['in_antidepressant_waiting_list'] > 0,
                      lambda: self.set_agent_state(agent, "antidepressant_waiting_list", update_values)),
-                    (lambda: update_values['antidepressant_antipsychotic_waiting_list'] > 0,
+                    (lambda: update_values['in_antidepressant_antipsychotic_waiting_list'] > 0,
                      lambda: self.set_agent_state(agent, "antidepressant_antipsychotic_waiting_list", update_values)),
-                    (lambda: update_values['antipsychotic_waiting_list'] > 0,
+                    (lambda: update_values['in_antipsychotic_waiting_list'] > 0,
                      lambda: self.set_agent_state(agent, "antipsychotic_waiting_list", update_values))
                 ]
                 random.shuffle(conditions_actions)
@@ -214,4 +228,36 @@ class DepressionTreatmentHybridABSD(Model):
     def set_agent_state(self, agent, state, update_values):
         agent.state = state
         agent.waiting_time = 0
-        update_values[state] -= 1
+        update_values["in_" + state] -= 1
+
+    @staticmethod
+    def format_stats(input_dict, time):
+        # Find the longest key to determine the padding
+        print("STATS TIME:", time)
+        input_dict = input_dict[time]["person"]
+        longest_key_length = len("antidepressant_antipsychotic_waiting_list")
+
+
+        formatted_string = ""
+        list_of_states = [
+            "antidepressant_waiting_list",
+            "antidepressant",
+            "antidepressant_antipsychotic_waiting_list",
+            "antidepressant_antipsychotic",
+            "antipsychotic_waiting_list",
+            "antipsychotic",
+            "esketamine_waiting_list",
+            "esketamine",
+            "ect_waiting_list",
+            "ect",
+            "remission"
+        ]
+
+        for state in list_of_states:
+            padding = longest_key_length - len(state)
+            if state in input_dict:
+                count = input_dict[state]['count']
+            else:
+                count = "0"
+            formatted_string += f"'{state}': {'_' * padding}{count}\n"
+        return formatted_string
