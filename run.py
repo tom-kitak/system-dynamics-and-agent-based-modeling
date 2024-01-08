@@ -26,17 +26,9 @@ if __name__ == "__main__":
 
     results = depression_treatment_hybrid.statistics()
 
-    # for t, r in results.items():
-    #     print(f"T:{t}={r['total_monetary_cost']}")
-
     plotter.plot_num_of_people_on_waiting_list(results)
     plotter.plot_percentage_in_remission(results)
-    plotter.plot_total_monetary_cost(results)
 
     # for t, r in results.items():
     #     r = dict(sorted(r["person"].items()))
     #     print(f"T:{t}={r}")
-    #     count = 0
-    #     for treatment, count_dict in r.items():
-    #         count += count_dict["count"]
-    #     print(count)

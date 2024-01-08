@@ -10,14 +10,16 @@ class Person(Agent):
         # Every stock from SD is a state
         self.state = "untreated"
 
-        self.waiting_time = 0
+        self.current_waiting_time = 0
         self.total_waiting_time = 0
 
-        self.treatment_history = []
-        self.in_treatment_time = 0
-        self.monetary_cost = 0
+        self.treatment_history = []  # Includes past treatments, response, remission, relapse
 
-        self.in_remission_time = 0
+        self.current_in_treatment_time = 0
+        self.current_in_remission_time = 0
+
+        self.total_remission_time = 0
+        self.total_response_time = 0
 
     def act(self, time, round_no, step_no):
         pass

@@ -23,8 +23,6 @@ class PatientDataCollector:
         self.agent_statistics[time] = {}
         self.aggregated_statistics[time] = {}
 
-        self.aggregated_statistics[time]["total_monetary_cost"] = 0
-
         self.aggregated_statistics[time]["waiting_list_count"] = {}
         self.aggregated_statistics[time]["waiting_list_count"]["antidepressant_waiting_list"] = 0
         self.aggregated_statistics[time]["waiting_list_count"]["antidepressant_antipsychotic_waiting_list"] = 0
@@ -44,9 +42,6 @@ class PatientDataCollector:
             # Collect percentage of patients in remission
             if "remission" in agent.state:
                 self.aggregated_statistics[time]["num_in_remission"] += 1
-
-            # Collect total monetary cost of the entire system
-            self.aggregated_statistics[time]["total_monetary_cost"] += agent.monetary_cost
 
             if agent.agent_type not in self.agent_statistics[time]:
                 self.agent_statistics[time][agent.agent_type] = {}

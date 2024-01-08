@@ -28,7 +28,6 @@ class DepressionTreatmentHybridABSD(Model):
 
         self.treatments = {"antidepressant", "antidepressant_antipsychotic", "antipsychotic", "esketamine", "ect"}
 
-
     def configure(self, config):
         super().configure(config)
         self.sd_model = DepressionTreatmentSystemDynamics(self)
@@ -108,42 +107,47 @@ class DepressionTreatmentHybridABSD(Model):
             if "waiting_list" in agent.state:
                 if agent.state == "antidepressant_waiting_list" and update_in_antidepressant > 0:
                     agent.state = "antidepressant"
-                    agent.total_waiting_time += agent.waiting_time
-                    agent.waiting_time = 0
-                    agent.in_treatment_time = 0
+                    agent.total_waiting_time += agent.current_waiting_time
+                    agent.current_waiting_time = 0
+                    agent.current_in_treatment_time = 0
                     update_in_antidepressant -= 1
                 elif agent.state == "antidepressant_antipsychotic_waiting_list" and update_in_antidepressant_antipsychotic > 0:
                     agent.state = "antidepressant_antipsychotic"
-                    agent.total_waiting_time += agent.waiting_time
-                    agent.waiting_time = 0
-                    agent.in_treatment_time = 0
+                    agent.total_waiting_time += agent.current_waiting_time
+                    agent.current_waiting_time = 0
+                    agent.current_in_treatment_time = 0
                     update_in_antidepressant_antipsychotic -= 1
                 elif agent.state == "antipsychotic_waiting_list" and update_in_antipsychotic > 0:
                     agent.state = "antipsychotic"
-                    agent.total_waiting_time += agent.waiting_time
-                    agent.waiting_time = 0
-                    agent.in_treatment_time = 0
+                    agent.total_waiting_time += agent.current_waiting_time
+                    agent.current_waiting_time = 0
+                    agent.current_in_treatment_time = 0
                     update_in_antipsychotic -= 1
                 elif agent.state == "esketamine_waiting_list" and update_in_esketamine > 0:
                     agent.state = "esketamine"
-                    agent.total_waiting_time += agent.waiting_time
-                    agent.waiting_time = 0
-                    agent.in_treatment_time = 0
+                    agent.total_waiting_time += agent.current_waiting_time
+                    agent.current_waiting_time = 0
+                    agent.current_in_treatment_time = 0
                     update_in_esketamine -= 1
                 elif agent.state == "ect_waiting_list" and update_in_ect > 0:
                     agent.state = "ect"
-                    agent.total_waiting_time += agent.waiting_time
-                    agent.waiting_time = 0
-                    agent.in_treatment_time = 0
+                    agent.total_waiting_time += agent.current_waiting_time
+                    agent.current_waiting_time = 0
+                    agent.current_in_treatment_time = 0
                     update_in_ect -= 1
                 else:
-                    agent.waiting_time += 1
+                    agent.current_waiting_time += 1
             elif agent.state in self.treatments:
-                agent.in_treatment_time += 1
-                if agent.in_treatment_time >= self.treatment_properties[agent.state]["duration"]:
-                    agent.in_treatment_time = 0
+                agent.current_in_treatment_time += 1
+
+                if agent.current_in_treatment_time >= self.treatment_properties[agent.state]["duration"]:
+
+                    # TODO
+                    if len(agent.treatment_history) > 0 and agent.treatment_history[-1] == "response":
+                        agent.total_response_time += agent.current_in_treatment_time
+
+                    agent.current_in_treatment_time = 0
                     agent.treatment_history.append(agent.state)
-                    agent.monetary_cost += self.treatment_properties[agent.state]["cost"]
 
                     remission_prob = self.treatment_properties[agent.state]["remission_rate"]
                     response_prob = self.treatment_properties[agent.state]["response_rate"] - \
@@ -166,7 +170,8 @@ class DepressionTreatmentHybridABSD(Model):
                             raise Exception(f"{agent.state} is not first line treatment")
 
                         agent.state = "remission"
-                        agent.in_remission_time = 0
+                        agent.current_in_remission_time = 0
+                        agent.treatment_history.append("remission")
                         in_remission += 1
                     elif random_number < remission_prob + response_prob:
                         # Response -> Start the same treatment again
@@ -196,16 +201,18 @@ class DepressionTreatmentHybridABSD(Model):
                         else:
                             raise Exception(f"{agent.state} is not first line treatment")
             elif agent.state == "remission":
-                agent.in_remission_time += 1
+                agent.current_in_remission_time += 1
+                agent.total_remission_time += 1
 
                 # TODO: Add relapse function
                 # Note: relapse probability formula is obtained from https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5684279/
-                relapse_probability = 0.2 - (1 / np.exp(7 * agent.in_remission_time))
+                relapse_probability = 0.2 - (1 / np.exp(7 * agent.current_in_remission_time))
 
                 if random.random() < relapse_probability:
                     # Relapse occurs -> Back to the start of the pipeline
                     agent.treatment_history.append("relapse")
                     agent.state = "untreated"
+                    agent.current_in_remission_time = 0
                     out_remission += 1
 
         self.exchange["depression_treatment_demand"] = depression_treatment_demand
@@ -227,7 +234,7 @@ class DepressionTreatmentHybridABSD(Model):
 
     def set_agent_state(self, agent, state, update_values):
         agent.state = state
-        agent.waiting_time = 0
+        agent.current_waiting_time = 0
         update_values["in_" + state] -= 1
 
     @staticmethod

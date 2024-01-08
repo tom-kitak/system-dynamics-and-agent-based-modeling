@@ -155,7 +155,7 @@ class DepressionTreatmentSystemDynamics:
 
         # # Initial values
         # NOTE: These values are from Julia's decision tree thingy, probably going to change
-        # TODO:LOW don't use hard cutoffs because then AP can only be  seen when there are more than 20 patients per week
+        # TODO: LOW don't use hard cutoffs because then AP can only be  seen when there are more than 20 patients per week
         self.antidepressant_allocation_percentage.equation = 0.60
         self.antidepressant_antipsychotic_allocation_percentage.equation = 0.35
         self.antipsychotic_allocation_percentage.equation = 0.05
