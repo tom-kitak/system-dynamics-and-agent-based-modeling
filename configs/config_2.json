@@ -1,7 +1,7 @@
 {
    "runspecs":{
       "starttime":1,
-      "stoptime":30,
+      "stoptime":200,
       "dt":1.0
    },
    "properties":{
@@ -9,7 +9,7 @@
    "agents":[
       {
          "name":"person",
-         "count":100
+         "count":1000
       }
    ],
    "new_patients_per_week":20,

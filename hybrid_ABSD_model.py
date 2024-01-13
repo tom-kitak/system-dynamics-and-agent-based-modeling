@@ -73,7 +73,7 @@ class DepressionTreatmentHybridABSD(Model):
         # if time != 1.0:
         #     print(DepressionTreatmentHybridABSD.format_stats(self.statistics(), float(time) - 1.0))
 
-        # print("TIME:", time)
+        print("TIME:", time)
         # print("in_antipsychotic_waiting_list", self.evaluate_equation("in_antipsychotic_waiting_list", time))
         # print("antipsychotic_waiting_list", self.evaluate_equation("antipsychotic_waiting_list", time))
         # print("in_antipsychotic", self.evaluate_equation("in_antipsychotic", time))
@@ -84,7 +84,7 @@ class DepressionTreatmentHybridABSD(Model):
         # Debugging END
 
         for agent in self.agents:
-
+            agent.total_time_in_the_model += 1
             if agent.state == "untreated":
 
                 conditions_actions = [
@@ -269,4 +269,4 @@ class DepressionTreatmentHybridABSD(Model):
     @staticmethod
     def relapse_function(time):
         """returns probability of relapse at a certain time point"""
-        return 0.398 * sp.exp(-1.556 * time)
+        return 0.398 * sp.exp(-1.556 * time * 0.453)

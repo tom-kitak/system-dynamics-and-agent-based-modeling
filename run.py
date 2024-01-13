@@ -1,11 +1,11 @@
 from BPTK_Py import SimultaneousScheduler
-from statistics.data_collection import PatientDataCollector
-from statistics.cost_calculation import aggregated_costs
+from data_collection import PatientDataCollector
+from statistics.cost_calculation import direct_costs
+from statistics.qalys_calculation import average_qalys
 from hybrid_ABSD_model import DepressionTreatmentHybridABSD
+import plotter
 import json
 import os
-import plotter
-
 
 if __name__ == "__main__":
     config_file = 'config_2.json'
@@ -26,12 +26,13 @@ if __name__ == "__main__":
 
     results = depression_treatment_hybrid.statistics()
 
-    # plotter.plot_num_of_people_on_waiting_list(results)
-    # plotter.plot_percentage_in_remission(results)
+    plotter.plot_num_of_people_on_waiting_list(results)
+    plotter.plot_percentage_in_remission(results)
 
-    total_cost_of_the_system = aggregated_costs(depression_treatment_hybrid.agents, depression_treatment_hybrid_config)
-    print(f"Total cost of the system: {total_cost_of_the_system} EUR")
-    print(f"Cost per patinet: {total_cost_of_the_system // len(depression_treatment_hybrid.agents)} EUR")
+    total_cost_of_the_system = direct_costs(depression_treatment_hybrid.agents, depression_treatment_hybrid_config)
+    print(f"Total direct cost of the system: {total_cost_of_the_system} EUR")
+    print(f"Direct cost per patient: {total_cost_of_the_system // len(depression_treatment_hybrid.agents)} EUR")
+    print(f"Average QALYs: {average_qalys(depression_treatment_hybrid.agents)}")
 
     # for t, r in results.items():
     #     r = dict(sorted(r["person"].items()))

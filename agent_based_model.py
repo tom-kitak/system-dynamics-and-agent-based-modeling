@@ -20,6 +20,7 @@ class Person(Agent):
 
         self.total_remission_time = 0
         self.total_response_time = 0
+        self.total_time_in_the_model = 0
 
     def act(self, time, round_no, step_no):
         pass
