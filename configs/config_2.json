@@ -1,0 +1,64 @@
+{
+   "runspecs":{
+      "starttime":1,
+      "stoptime":30,
+      "dt":1.0
+   },
+   "properties":{
+   },
+   "agents":[
+      {
+         "name":"person",
+         "count":100
+      }
+   ],
+   "new_patients_per_week":20,
+   "treatment_properties":{
+      "esketamine":{
+         "duration": 4,
+         "treatment_cost": 3045,
+         "maintenance_cost": 330,
+         "response_rate": 0.784,
+         "remission_rate": 0.472,
+         "relapse_rate": 0.054,
+         "capacity": 10
+      },
+      "antipsychotic":{
+         "duration": 4,
+         "treatment_cost": 923,
+         "maintenance_cost": 33,
+         "response_rate": 0.507,
+         "remission_rate": 0.2978,
+         "relapse_rate": 0.043,
+         "capacity": 5
+      },
+      "antidepressant_antipsychotic":{
+         "duration": 4,
+         "treatment_cost": 927,
+         "maintenance_cost": 35,
+         "response_rate": 0.524,
+         "remission_rate": 0.3886,
+         "relapse_rate": 0.035,
+         "capacity": 37
+      },
+      "antidepressant":{
+         "duration":4,
+         "treatment_cost": 924,
+         "maintenance_cost": 34,
+         "response_rate": 0.402,
+         "remission_rate": 0.34,
+         "relapse_rate": 0.055,
+         "capacity": 63
+      },
+      "ect":{
+         "duration": 4,
+         "cost": 5200,
+         "treatment_cost": 5200,
+         "maintenance_cost": 34,
+         "response_rate": 0.414,
+         "remission_rate": 0.591,
+         "relapse_rate": 0.015,
+         "capacity": 5
+      }
+   }
+}

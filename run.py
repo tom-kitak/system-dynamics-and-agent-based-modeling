@@ -1,6 +1,6 @@
-from BPTK_Py import DataCollector
 from BPTK_Py import SimultaneousScheduler
-from data_collection import PatientDataCollector
+from statistics.data_collection import PatientDataCollector
+from statistics.cost_calculation import aggregated_costs
 from hybrid_ABSD_model import DepressionTreatmentHybridABSD
 import json
 import os
@@ -8,7 +8,7 @@ import plotter
 
 
 if __name__ == "__main__":
-    config_file = 'config.json'
+    config_file = 'config_2.json'
     depression_treatment_hybrid = DepressionTreatmentHybridABSD(name="Depression treatment",
                                                                 scheduler=SimultaneousScheduler(),
                                                                 data_collector=PatientDataCollector())
@@ -26,8 +26,12 @@ if __name__ == "__main__":
 
     results = depression_treatment_hybrid.statistics()
 
-    plotter.plot_num_of_people_on_waiting_list(results)
-    plotter.plot_percentage_in_remission(results)
+    # plotter.plot_num_of_people_on_waiting_list(results)
+    # plotter.plot_percentage_in_remission(results)
+
+    total_cost_of_the_system = aggregated_costs(depression_treatment_hybrid.agents, depression_treatment_hybrid_config)
+    print(f"Total cost of the system: {total_cost_of_the_system} EUR")
+    print(f"Cost per patinet: {total_cost_of_the_system // len(depression_treatment_hybrid.agents)} EUR")
 
     # for t, r in results.items():
     #     r = dict(sorted(r["person"].items()))

@@ -3,6 +3,7 @@ from system_dynamics_model import DepressionTreatmentSystemDynamics
 from agent_based_model import Person
 import numpy as np
 import random
+import sympy as sp
 
 
 class DepressionTreatmentHybridABSD(Model):
@@ -142,12 +143,11 @@ class DepressionTreatmentHybridABSD(Model):
 
                 if agent.current_in_treatment_time >= self.treatment_properties[agent.state]["duration"]:
 
-                    # TODO
-                    if len(agent.treatment_history) > 0 and agent.treatment_history[-1] == "response":
+                    if len(agent.treatment_history) > 0 and agent.treatment_history[-1][0] == "response":
                         agent.total_response_time += agent.current_in_treatment_time
 
                     agent.current_in_treatment_time = 0
-                    agent.treatment_history.append(agent.state)
+                    agent.treatment_history.append([agent.state, agent.current_in_treatment_time])
 
                     remission_prob = self.treatment_properties[agent.state]["remission_rate"]
                     response_prob = self.treatment_properties[agent.state]["response_rate"] - \
@@ -171,11 +171,11 @@ class DepressionTreatmentHybridABSD(Model):
 
                         agent.state = "remission"
                         agent.current_in_remission_time = 0
-                        agent.treatment_history.append("remission")
+                        agent.treatment_history.append(["remission", 0])
                         in_remission += 1
                     elif random_number < remission_prob + response_prob:
                         # Response -> Start the same treatment again
-                        agent.treatment_history.append("response")
+                        agent.treatment_history.append(["response", 0])
                     else:
                         # Fail -> Enter next treatment waiting list
                         if agent.state == "antidepressant":
@@ -203,14 +203,12 @@ class DepressionTreatmentHybridABSD(Model):
             elif agent.state == "remission":
                 agent.current_in_remission_time += 1
                 agent.total_remission_time += 1
+                agent.treatment_history[-1][1] = agent.current_in_remission_time
 
-                # TODO: Add relapse function
-                # Note: relapse probability formula is obtained from https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5684279/
-                relapse_probability = 0.2 - (1 / np.exp(7 * agent.current_in_remission_time))
+                relapse_probability = DepressionTreatmentHybridABSD.relapse_function(agent.current_in_remission_time)
 
                 if random.random() < relapse_probability:
                     # Relapse occurs -> Back to the start of the pipeline
-                    agent.treatment_history.append("relapse")
                     agent.state = "untreated"
                     agent.current_in_remission_time = 0
                     out_remission += 1
@@ -244,7 +242,6 @@ class DepressionTreatmentHybridABSD(Model):
         input_dict = input_dict[time]["person"]
         longest_key_length = len("antidepressant_antipsychotic_waiting_list")
 
-
         formatted_string = ""
         list_of_states = [
             "antidepressant_waiting_list",
@@ -268,3 +265,8 @@ class DepressionTreatmentHybridABSD(Model):
                 count = "0"
             formatted_string += f"'{state}': {'_' * padding}{count}\n"
         return formatted_string
+
+    @staticmethod
+    def relapse_function(time):
+        """returns probability of relapse at a certain time point"""
+        return 0.398 * sp.exp(-1.556 * time)

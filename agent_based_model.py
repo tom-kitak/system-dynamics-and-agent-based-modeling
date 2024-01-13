@@ -13,7 +13,7 @@ class Person(Agent):
         self.current_waiting_time = 0
         self.total_waiting_time = 0
 
-        self.treatment_history = []  # Includes past treatments, response, remission, relapse
+        self.treatment_history = []  # Includes past treatments, response, remission + duration in a list of 2 elements
 
         self.current_in_treatment_time = 0
         self.current_in_remission_time = 0
