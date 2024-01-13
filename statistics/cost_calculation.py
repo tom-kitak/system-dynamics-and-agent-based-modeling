@@ -22,8 +22,9 @@ def direct_costs(agents, treatment_config):
                 total_cost += treatment_config["treatment_properties"][state]["treatment_cost"]
     return total_cost
 
+
 def indirect_costs(agents):
     total_cost = 0
     for agent in agents:
-        agent.total_response_time + agent.to
+        total_cost += ((agent.total_time_in_the_model - agent.total_remission_time) * 0.54 + agent.total_remission_time * 0.23) * 714
     return total_cost
