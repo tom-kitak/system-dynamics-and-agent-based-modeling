@@ -12,7 +12,7 @@
          "count":1000
       }
    ],
-   "new_patients_per_week":20,
+   "new_patients_per_week":1,
    "treatment_properties":{
       "esketamine":{
          "duration": 4,

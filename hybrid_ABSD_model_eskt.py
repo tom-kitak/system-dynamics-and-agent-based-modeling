@@ -1,5 +1,5 @@
 from BPTK_Py import Model
-from system_dynamics_model import DepressionTreatmentSystemDynamics
+from system_dynamics_model_eskt import DepressionTreatmentSystemDynamics
 from agent_based_model import Person
 import numpy as np
 import random
@@ -143,11 +143,12 @@ class DepressionTreatmentHybridABSD(Model):
 
                 if agent.current_in_treatment_time >= self.treatment_properties[agent.state]["duration"]:
 
+                    # todo: Is it correct
                     if len(agent.treatment_history) > 0 and agent.treatment_history[-1][0] == "response":
                         agent.total_response_time += agent.current_in_treatment_time
 
-                    agent.current_in_treatment_time = 0
                     agent.treatment_history.append([agent.state, agent.current_in_treatment_time])
+                    agent.current_in_treatment_time = 0
 
                     remission_prob = self.treatment_properties[agent.state]["remission_rate"]
                     response_prob = self.treatment_properties[agent.state]["response_rate"] - \

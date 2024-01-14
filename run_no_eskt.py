@@ -2,14 +2,14 @@ from BPTK_Py import SimultaneousScheduler
 from data_collection import PatientDataCollector
 from statistics.cost_calculation import direct_costs, indirect_costs
 from statistics.qalys_calculation import average_qalys
-from hybrid_ABSD_model_eskt import DepressionTreatmentHybridABSD
+from hybrid_ABSD_model_no_eskt import DepressionTreatmentHybridABSDWithoutEsketamine
 import plotter
 import json
 import os
 
 if __name__ == "__main__":
     config_file = 'config_eskt.json'
-    depression_treatment_hybrid_eskt = DepressionTreatmentHybridABSD(name="Depression treatment",
+    depression_treatment_hybrid_eskt = DepressionTreatmentHybridABSDWithoutEsketamine(name="Depression treatment",
                                                                      scheduler=SimultaneousScheduler(),
                                                                      data_collector=PatientDataCollector())
 
@@ -26,7 +26,7 @@ if __name__ == "__main__":
 
     eskt_results = depression_treatment_hybrid_eskt.statistics()
 
-    plotter.plot_num_of_people_on_waiting_list(eskt_results)
+    plotter.plot_num_of_people_on_waiting_list(eskt_results, plot_esketamine=False)
     plotter.plot_percentage_in_remission(eskt_results)
 
     print("ESKT")

@@ -26,5 +26,7 @@ def direct_costs(agents, treatment_config):
 def indirect_costs(agents):
     total_cost = 0
     for agent in agents:
+        # 714 is in EUR and is average weekly salary, percentages of unemployed people, 0.54 and 0.23, can be found
+        # in "Model Data" under "Functional impairment"
         total_cost += ((agent.total_time_in_the_model - agent.total_remission_time) * 0.54 + agent.total_remission_time * 0.23) * 714
     return total_cost
