@@ -33,7 +33,7 @@ def plot_num_of_people_on_waiting_list(data, plot_esketamine=True):
     plt.show()
 
 
-def plot_percentage_in_remission(data):
+def plot_percentage_in_remission(data, title="Esketamine"):
     weeks = list(data.keys())
     percentage_in_remission = [data[w]['percentage_in_remission'] for w in weeks]
 
@@ -44,7 +44,7 @@ def plot_percentage_in_remission(data):
     # Adding labels and title
     plt.xlabel('Weeks')
     plt.ylabel('Percentage in Remission')
-    plt.title('Percentage of People in Remission Over Time')
+    plt.title(f'Percentage of People in Remission Over Time For {title}')
     plt.grid(True)
 
     # Display the plot

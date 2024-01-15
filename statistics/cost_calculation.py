@@ -1,4 +1,4 @@
-def direct_costs(agents, treatment_config):
+def direct_costs_per_patient(agents, treatment_config):
     """
         agent.agent_treatment_history (list): A pair where each element is (state, time in weeks in the state).
         treatment_config (dict): dictionary containing information about treatments
@@ -20,13 +20,13 @@ def direct_costs(agents, treatment_config):
                 total_cost += min(time_in_state, 24) * maintenance_cost
             else:
                 total_cost += treatment_config["treatment_properties"][state]["treatment_cost"]
-    return total_cost
+    return total_cost // len(agents)
 
 
-def indirect_costs(agents):
+def indirect_costs_per_patient(agents):
     total_cost = 0
     for agent in agents:
         # 714 is in EUR and is average weekly salary, percentages of unemployed people, 0.54 and 0.23, can be found
         # in "Model Data" under "Functional impairment"
         total_cost += ((agent.total_time_in_the_model - agent.total_remission_time) * 0.54 + agent.total_remission_time * 0.23) * 714
-    return total_cost
+    return total_cost // len(agents)
