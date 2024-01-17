@@ -143,7 +143,6 @@ class DepressionTreatmentHybridABSD(Model):
 
                 if agent.current_in_treatment_time >= self.treatment_properties[agent.state]["duration"]:
 
-                    # todo: Is it correct
                     if len(agent.treatment_history) > 0 and agent.treatment_history[-1][0] == "response":
                         agent.total_response_time += agent.current_in_treatment_time
 

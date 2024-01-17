@@ -1,6 +1,5 @@
 import numpy as np
 import scipy.stats as stats
-from datetime import datetime
 
 QOL_WEIGHT_REMISSION = 0.901
 QOL_WEIGHT_RESPONSE = 0.673
@@ -86,7 +85,6 @@ def aggregated_statistics(aggr_run_stats, confidence_level=0.95):
     aggr_stats_results["with_esketamine"] = {}
     aggr_stats_results["without_esketamine"] = {}
 
-
     for data_point_type in aggr_run_stats["with_esketamine"][f"sim_run_0"]["aggregated_run_statistics"]:
 
         aggr_stats_results["with_esketamine"][data_point_type] = {}
@@ -145,10 +143,6 @@ def aggregated_statistics(aggr_run_stats, confidence_level=0.95):
         aggr_stats_results["pipelines_comparison"][comparison_stats]["standard_deviation"] = std_dev
         aggr_stats_results["pipelines_comparison"][comparison_stats]["standard_error_of_the_mean"] = standard_error_of_the_mean
         aggr_stats_results["pipelines_comparison"][comparison_stats][f"confidence_interval_{confidence_level}"] = confidence_interval
-
-    aggr_stats_results["metadata"] = {
-        "date_time": datetime.now().strftime("%d-%m-%Y %H:%M:%S")
-    }
 
     return aggr_stats_results
 
