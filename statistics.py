@@ -102,7 +102,7 @@ def aggregated_statistics(aggr_run_stats, confidence_level=0.95):
         for data_point_type in aggr_stats_results[eskt_or_not]:
             dataset = aggr_stats_results[eskt_or_not][data_point_type]["dataset"]
             mean = np.mean(dataset)
-            std_dev = np.std(dataset, ddof=1)
+            std_dev = np.std(dataset)
             standard_error_of_the_mean = stats.sem(dataset)
             degrees_freedom = len(dataset) - 1
             confidence_interval = stats.t.interval(confidence_level, degrees_freedom, mean, standard_error_of_the_mean)
@@ -134,7 +134,7 @@ def aggregated_statistics(aggr_run_stats, confidence_level=0.95):
         dataset = aggr_stats_results["pipelines_comparison"][comparison_stats]["dataset"]
 
         mean = np.mean(dataset)
-        std_dev = np.std(dataset, ddof=1)
+        std_dev = np.std(dataset)
         standard_error_of_the_mean = stats.sem(dataset)
         degrees_freedom = len(dataset) - 1
         confidence_interval = stats.t.interval(confidence_level, degrees_freedom, mean, standard_error_of_the_mean)
