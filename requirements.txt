@@ -2,3 +2,5 @@ BPTK_Py
 matplotlib
 pandas
 numpy
+tqdm
+scipy

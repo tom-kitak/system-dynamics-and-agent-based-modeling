@@ -66,7 +66,7 @@ class DepressionTreatmentHybridABSDWithoutEsketamine(Model):
         # if time != 1.0:
         #     print(DepressionTreatmentHybridABSD.format_stats(self.statistics(), float(time) - 1.0))
 
-        print("TIME:", time)
+        # print("TIME:", time)
         # print("in_antipsychotic_waiting_list", self.evaluate_equation("in_antipsychotic_waiting_list", time))
         # print("antipsychotic_waiting_list", self.evaluate_equation("antipsychotic_waiting_list", time))
         # print("in_antipsychotic", self.evaluate_equation("in_antipsychotic", time))
