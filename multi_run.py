@@ -28,7 +28,7 @@ if __name__ == "__main__":
     # Parameters
     CONFIG_FILE = "config_eskt.json"
     NUM_SIMULATIONS = 3
-    SAVE_FILE = "run_one.json"
+    SAVE_FILE = "aggregated_results.json"
 
     # Load config file
     pwd = os.path.dirname(os.path.realpath(__file__))
@@ -50,7 +50,7 @@ if __name__ == "__main__":
         model = DepressionTreatmentHybridABSDWithoutEsketamine(name="ETreatment pathway without Esketamie", scheduler=SimultaneousScheduler(), data_collector=PatientDataCollector())
         runs["without_esketamine"][f"sim_run_{sim_num}"] = run(model, config)
 
-    save_file_path = os.path.join(pwd, "results", "data_dump.json")
+    save_file_path = os.path.join(pwd, "results", "runs_data_dump.json")
     with open(save_file_path, 'w') as file:
         json.dump(runs, file, indent=4)
 
@@ -61,6 +61,6 @@ if __name__ == "__main__":
         json.dump(aggregated_statistics_results, file, indent=4)
 
     # Plotting
-    plotter.plot_num_of_people_on_waiting_list_mean_run(runs)
-    plotter.plot_num_of_people_on_waiting_list_mean_run(runs, with_or_without_esketamine="without_esketamine")
-    # plotter.plot_percentage_in_remission(eskt_results)
+    plotter.plot_num_of_people_on_waiting_list_mean_multi_run(runs)
+    plotter.plot_num_of_people_on_waiting_list_mean_multi_run(runs, with_or_without_esketamine="without_esketamine")
+    plotter.plot_percentage_in_remission_multi_run(runs)

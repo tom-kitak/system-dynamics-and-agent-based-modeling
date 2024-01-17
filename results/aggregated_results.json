@@ -1,0 +1,204 @@
+{
+    "pipelines_comparison": {
+        "incremental_cost_effectiveness_ratio": {
+            "dataset": [
+                33198.2270951191,
+                60888.45283533225,
+                -10338.815936897994
+            ],
+            "mean": 27915.954664517787,
+            "standard_deviation": 35906.235610422875,
+            "standard_error_of_the_mean": 20730.474795263774,
+            "confidence_interval_0.95": [
+                -61280.07930568076,
+                117111.98863471634
+            ]
+        },
+        "net_monetary_benefit": {
+            "dataset": [
+                334.02898550723376,
+                -139.1268115942803,
+                5853.652173912939
+            ],
+            "mean": 2016.1847826086312,
+            "standard_deviation": 3331.7542056063517,
+            "standard_error_of_the_mean": 1923.589187480495,
+            "confidence_interval_0.95": [
+                -6260.351486132132,
+                10292.721051349394
+            ]
+        }
+    },
+    "with_esketamine": {
+        "average_qalys": {
+            "dataset": [
+                1.6042124456521545,
+                1.6323383152173685,
+                1.6792854166666438
+            ],
+            "mean": 1.6386120591787223,
+            "standard_deviation": 0.03792766327767971,
+            "standard_error_of_the_mean": 0.021897546603101867,
+            "confidence_interval_0.95": [
+                1.5443945205085268,
+                1.7328295978489179
+            ]
+        },
+        "direct_costs_per_patient": {
+            "dataset": [
+                3196,
+                3171,
+                3214
+            ],
+            "mean": 3193.6666666666665,
+            "standard_deviation": 21.594752448994022,
+            "standard_error_of_the_mean": 12.467736139510029,
+            "confidence_interval_0.95": [
+                3140.02232773019,
+                3247.311005603143
+            ]
+        },
+        "indirect_costs_per_patient": {
+            "dataset": [
+                45635.0,
+                45034.0,
+                43990.0
+            ],
+            "mean": 44886.333333333336,
+            "standard_deviation": 832.382324015433,
+            "standard_error_of_the_mean": 480.5761588389966,
+            "confidence_interval_0.95": [
+                42818.58101157445,
+                46954.08565509222
+            ]
+        },
+        "total_costs_per_patient": {
+            "dataset": [
+                48831.0,
+                48205.0,
+                47204.0
+            ],
+            "mean": 48080.0,
+            "standard_deviation": 820.6710668714964,
+            "standard_error_of_the_mean": 473.8146613743958,
+            "confidence_interval_0.95": [
+                46041.34005376547,
+                50118.65994623453
+            ]
+        },
+        "remission_rate": {
+            "dataset": [
+                39.47826086956522,
+                41.30434782608695,
+                46.52173913043478
+            ],
+            "mean": 42.43478260869565,
+            "standard_deviation": 3.6552781838232518,
+            "standard_error_of_the_mean": 2.110375843393321,
+            "confidence_interval_0.95": [
+                33.35456822498057,
+                51.51499699241073
+            ]
+        },
+        "mean_treatment_level": {
+            "dataset": [
+                1.6017391304347826,
+                1.6365217391304347,
+                1.606086956521739
+            ],
+            "mean": 1.614782608695652,
+            "standard_deviation": 0.01895173453713338,
+            "standard_error_of_the_mean": 0.010941789036624286,
+            "confidence_interval_0.95": [
+                1.5677038902271072,
+                1.6618613271641969
+            ]
+        }
+    },
+    "without_esketamine": {
+        "average_qalys": {
+            "dataset": [
+                1.5843318659420098,
+                1.619560851449254,
+                1.582272373188385
+            ],
+            "mean": 1.5953883635265498,
+            "standard_deviation": 0.02095930000931635,
+            "standard_error_of_the_mean": 0.012100857502404921,
+            "confidence_interval_0.95": [
+                1.54332257595956,
+                1.6474541510935397
+            ]
+        },
+        "direct_costs_per_patient": {
+            "dataset": [
+                2133,
+                2156,
+                2123
+            ],
+            "mean": 2137.3333333333335,
+            "standard_deviation": 16.921386861996073,
+            "standard_error_of_the_mean": 9.76956725983523,
+            "confidence_interval_0.95": [
+                2095.298278092752,
+                2179.368388573915
+            ]
+        },
+        "indirect_costs_per_patient": {
+            "dataset": [
+                46038.0,
+                45271.0,
+                46084.0
+            ],
+            "mean": 45797.666666666664,
+            "standard_deviation": 456.686252621352,
+            "standard_error_of_the_mean": 263.66793088613906,
+            "confidence_interval_0.95": [
+                44663.19512404936,
+                46932.13820928397
+            ]
+        },
+        "total_costs_per_patient": {
+            "dataset": [
+                48171.0,
+                47427.0,
+                48207.0
+            ],
+            "mean": 47935.0,
+            "standard_deviation": 440.3089824202999,
+            "standard_error_of_the_mean": 254.21250952697036,
+            "confidence_interval_0.95": [
+                46841.211851906184,
+                49028.788148093816
+            ]
+        },
+        "remission_rate": {
+            "dataset": [
+                35.73913043478261,
+                38.08695652173913,
+                34.78260869565217
+            ],
+            "mean": 36.20289855072464,
+            "standard_deviation": 1.7002909421521717,
+            "standard_error_of_the_mean": 0.9816634331522388,
+            "confidence_interval_0.95": [
+                31.979141700218086,
+                40.426655401231194
+            ]
+        },
+        "mean_treatment_level": {
+            "dataset": [
+                1.4234782608695653,
+                1.4260869565217391,
+                1.42
+            ],
+            "mean": 1.4231884057971014,
+            "standard_deviation": 0.003053812681986334,
+            "standard_error_of_the_mean": 0.0017631195739995032,
+            "confidence_interval_0.95": [
+                1.4156023145488723,
+                1.4307744970453304
+            ]
+        }
+    }
+}
