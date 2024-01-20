@@ -1,9 +1,8 @@
 from BPTK_Py import Model
 from system_dynamics_model_no_eskt import DepressionTreatmentSystemDynamicsWithoutEsketamine
 from agent_based_model import Person
-import numpy as np
+from utils.phq_analysis import PHQ9Analysis
 import random
-import sympy as sp
 
 
 class DepressionTreatmentHybridABSDWithoutEsketamine(Model):
@@ -22,10 +21,13 @@ class DepressionTreatmentHybridABSDWithoutEsketamine(Model):
 
         self.exchange["in_remission"] = 0
         self.exchange["out_remission"] = 0
+        self.exchange["in_recovery"] = 0
+        self.exchange["out_recovery"] = 0
         self.exchange["in_ect_waiting_list"] = 0
         self.exchange["in_antidepressant_waiting_list"] = 0
 
         self.treatments = {"antidepressant", "antidepressant_antipsychotic", "antipsychotic", "ect"}
+        self.relapse_function = PHQ9Analysis()
 
     def configure(self, config):
         super().configure(config)
@@ -48,6 +50,8 @@ class DepressionTreatmentHybridABSDWithoutEsketamine(Model):
 
         in_remission = 0
         out_remission = 0
+        in_recovery = 0
+        out_recovery = 0
         in_ect_waiting_list = 0
         in_antidepressant_waiting_list = 0
 
@@ -186,14 +190,42 @@ class DepressionTreatmentHybridABSDWithoutEsketamine(Model):
                 agent.current_in_remission_time += 1
                 agent.total_remission_time += 1
                 agent.treatment_history[-1][1] = agent.current_in_remission_time
+                treatment_that_got_you_in_remission = agent.treatment_history[-2][0]
 
-                relapse_probability = DepressionTreatmentHybridABSDWithoutEsketamine.relapse_function(agent.current_in_remission_time)
-
+                relapse_probability = self.relapse_function.get_prob_at_time(t=agent.current_in_remission_time - 1,
+                                                                             p=self.treatment_properties[
+                                                                                 treatment_that_got_you_in_remission][
+                                                                                 "relapse_rate"],
+                                                                             type="maintenance")
                 if random.random() < relapse_probability:
                     # Relapse occurs -> Back to the start of the pipeline
                     agent.state = "untreated"
                     agent.current_in_remission_time = 0
                     out_remission += 1
+                # Recovery after 6 months (6 * 4 = 24 weeks)
+                elif agent.current_in_remission_time >= 24:
+                    agent.state = "recovery"
+                    agent.current_in_remission_time = 0
+                    out_remission += 1
+                    in_recovery += 1
+                    agent.treatment_history.append(["recovery", 0])
+
+            elif agent.state == "recovery":
+                agent.current_in_recovery_time += 1
+                agent.total_recovery_time += 1
+                agent.treatment_history[-1][1] = agent.current_in_recovery_time
+                treatment_that_got_you_in_recovery = agent.treatment_history[-3][0]
+
+                relapse_probability = self.relapse_function.get_prob_at_time(t=agent.current_in_recovery_time - 1,
+                                                                             p=self.treatment_properties[
+                                                                                 treatment_that_got_you_in_recovery][
+                                                                                 "relapse_rate"],
+                                                                             type="discontinued")
+                if random.random() < relapse_probability:
+                    # Relapse occurs -> Back to the start of the pipeline
+                    agent.state = "untreated"
+                    agent.current_in_recovery_time = 0
+                    out_recovery += 1
 
         self.exchange["depression_treatment_demand"] = depression_treatment_demand
 
@@ -204,6 +236,8 @@ class DepressionTreatmentHybridABSDWithoutEsketamine(Model):
 
         self.exchange["in_remission"] = in_remission
         self.exchange["out_remission"] = out_remission
+        self.exchange["in_recovery"] = in_recovery
+        self.exchange["out_recovery"] = out_recovery
 
         self.exchange["in_ect_waiting_list"] = in_ect_waiting_list
         self.exchange["in_antidepressant_waiting_list"] = in_antidepressant_waiting_list
@@ -232,7 +266,8 @@ class DepressionTreatmentHybridABSDWithoutEsketamine(Model):
             "antipsychotic",
             "ect_waiting_list",
             "ect",
-            "remission"
+            "remission",
+            "recovery"
         ]
 
         for state in list_of_states:
@@ -243,8 +278,3 @@ class DepressionTreatmentHybridABSDWithoutEsketamine(Model):
                 count = "0"
             formatted_string += f"'{state}': {'_' * padding}{count}\n"
         return formatted_string
-
-    @staticmethod
-    def relapse_function(time):
-        """returns probability of relapse at a certain time point"""
-        return 0.398 * sp.exp(-1.556 * time * 0.453)

@@ -32,6 +32,8 @@ class PatientDataCollector:
 
         self.aggregated_statistics[time]["percentage_in_remission"] = 0.0
         self.aggregated_statistics[time]["num_in_remission"] = 0
+        self.aggregated_statistics[time]["percentage_in_recovery"] = 0.0
+        self.aggregated_statistics[time]["num_in_recovery"] = 0
 
         for agent in agents:
 
@@ -42,6 +44,9 @@ class PatientDataCollector:
             # Collect percentage of patients in remission
             if "remission" in agent.state:
                 self.aggregated_statistics[time]["num_in_remission"] += 1
+
+            if "recovery" in agent.state:
+                self.aggregated_statistics[time]["num_in_recovery"] += 1
 
             if agent.agent_type not in self.agent_statistics[time]:
                 self.agent_statistics[time][agent.agent_type] = {}
@@ -88,6 +93,8 @@ class PatientDataCollector:
                                                                  agent_property_value["value"]))
 
         self.aggregated_statistics[time]["percentage_in_remission"] = self.aggregated_statistics[time]["num_in_remission"] / len(agents)
+        self.aggregated_statistics[time]["percentage_in_recovery"] = self.aggregated_statistics[time][
+                                                                          "num_in_recovery"] / len(agents)
 
 
     def statistics(self):

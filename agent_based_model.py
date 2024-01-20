@@ -16,14 +16,16 @@ class Person(Agent):
         # This is a list where elements are lists of two items, the first element in this pair can be a one of the
         # treatment states (not waiting lists), response and remission. The second item in the pair is the
         # duration patient spent in the treatment in weeks
-        self.treatment_history = []  # Includes past treatments, response, remission + duration in a list of 2 elements
+        self.treatment_history = []  # Includes past treatments, response, remission, recovery + duration in a list of 2 elements
 
         # If they are in treatment this tracks how long they have been in this treatment
         self.current_in_treatment_time = 0
         self.current_in_remission_time = 0
+        self.current_in_recovery_time = 0
 
         self.total_remission_time = 0
         self.total_response_time = 0
+        self.total_recovery_time = 0
         self.total_time_in_the_model = 0
 
     def act(self, time, round_no, step_no):

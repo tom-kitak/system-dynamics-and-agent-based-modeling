@@ -40,8 +40,11 @@ def direct_costs_per_patient(agents, treatment_config):
 
                 # You are in maintenance for maximum of 6 months or 24 weeks
                 total_cost += min(time_in_state, 24) * maintenance_cost
-            else:
+            elif state in TREATMENTS:
                 total_cost += treatment_config["treatment_properties"][state]["treatment_cost"]
+            else:
+                # TODO: add recovery
+                pass
     return total_cost // len(agents)
 
 

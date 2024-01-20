@@ -22,6 +22,7 @@ class DepressionTreatmentSystemDynamics:
 
         # Health states
         self.remission = model.stock("remission")
+        self.recovery = model.stock("recovery")
 
         # # Flows
         # Treatments
@@ -53,6 +54,8 @@ class DepressionTreatmentSystemDynamics:
         # Health states
         self.in_remission = model.flow("in_remission")
         self.out_remission = model.flow("out_remission")
+        self.in_recovery = model.flow("in_recovery")
+        self.out_recovery = model.flow("out_recovery")
 
         # # Converters
         self.depression_treatment_demand = model.converter("depression_treatment_demand")
@@ -88,6 +91,7 @@ class DepressionTreatmentSystemDynamics:
 
         # Health states flow
         self.remission.equation = self.in_remission - self.out_remission
+        self.recovery.equation = self.in_recovery - self.out_recovery
 
         # Interesting part:
         # Gets the demand from the AB model
@@ -153,9 +157,17 @@ class DepressionTreatmentSystemDynamics:
         self.out_remission.equation = self.model.function("out_remission_update",
             lambda m, t: m.exchange["out_remission"])()
 
+        # Enter recovery
+        self.in_recovery.equation = self.model.function("in_recovery_update",
+            lambda m, t: m.exchange["in_recovery"])()
+
+        # Exit recovery
+        self.out_recovery.equation = self.model.function("out_recovery_update",
+            lambda m, t: m.exchange["out_recovery"])()
+
         # # Initial values
         # NOTE: These values are from Julia's decision tree thingy, probably going to change
-        # TODO: LOW don't use hard cutoffs because then AP can only be  seen when there are more than 20 patients per week
+        # TODO: don't use hard cutoffs because then AP can only be seen when there are more than 20 patients per week
         self.antidepressant_allocation_percentage.equation = 0.60
         self.antidepressant_antipsychotic_allocation_percentage.equation = 0.35
         self.antipsychotic_allocation_percentage.equation = 0.05

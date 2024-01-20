@@ -1,7 +1,7 @@
 {
    "runspecs":{
       "starttime":1,
-      "stoptime":150,
+      "stoptime":500,
       "dt":1.0
    },
    "properties":{
@@ -20,7 +20,7 @@
          "maintenance_cost": 330,
          "response_rate": 0.784,
          "remission_rate": 0.472,
-         "relapse_rate": 0.054,
+         "relapse_rate": 0.267,
          "capacity": 10
       },
       "antipsychotic":{
@@ -29,7 +29,7 @@
          "maintenance_cost": 33,
          "response_rate": 0.507,
          "remission_rate": 0.2978,
-         "relapse_rate": 0.043,
+         "relapse_rate": 0.125,
          "capacity": 5
       },
       "antidepressant_antipsychotic":{
@@ -38,7 +38,7 @@
          "maintenance_cost": 35,
          "response_rate": 0.524,
          "remission_rate": 0.3886,
-         "relapse_rate": 0.035,
+         "relapse_rate": 0.2,
          "capacity": 37
       },
       "antidepressant":{
@@ -47,7 +47,7 @@
          "maintenance_cost": 34,
          "response_rate": 0.402,
          "remission_rate": 0.34,
-         "relapse_rate": 0.055,
+         "relapse_rate": 0.60,
          "capacity": 63
       },
       "ect":{
@@ -57,7 +57,7 @@
          "maintenance_cost": 34,
          "response_rate": 0.414,
          "remission_rate": 0.591,
-         "relapse_rate": 0.015,
+         "relapse_rate": 0.5,
          "capacity": 5
       }
    }

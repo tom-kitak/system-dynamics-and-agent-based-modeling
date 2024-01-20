@@ -168,3 +168,21 @@ def plot_percentage_in_remission(data, title="Esketamine"):
 
     # Display the plot
     plt.show()
+
+
+def plot_percentage_in_recovery(data, title="Esketamine"):
+    weeks = list(data.keys())
+    percentage_in_recovery = [data[w]['percentage_in_recovery'] for w in weeks]
+
+    # Creating the plot for percentage in recovery
+    plt.figure()
+    plt.plot(weeks, percentage_in_recovery, label='Percentage in Recovery', color='green', marker='o')
+
+    # Adding labels and title
+    plt.xlabel('Weeks')
+    plt.ylabel('Percentage in Recovery')
+    plt.title(f'Percentage of People in Recovery Over Time For {title}')
+    plt.grid(True)
+
+    # Display the plot
+    plt.show()
