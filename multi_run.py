@@ -64,3 +64,4 @@ if __name__ == "__main__":
     plotter.plot_num_of_people_on_waiting_list_mean_multi_run(runs)
     plotter.plot_num_of_people_on_waiting_list_mean_multi_run(runs, with_or_without_esketamine="without_esketamine")
     plotter.plot_percentage_in_remission_multi_run(runs)
+    plotter.plot_percentage_in_recovery_multi_run(runs)

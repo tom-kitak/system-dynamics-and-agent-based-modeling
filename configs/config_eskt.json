@@ -1,7 +1,7 @@
 {
    "runspecs":{
       "starttime":1,
-      "stoptime":500,
+      "stoptime":150,
       "dt":1.0
    },
    "properties":{

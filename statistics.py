@@ -13,7 +13,7 @@ def average_qalys(agents):
     total_qalys = 0
     for agent in agents:
         # There are 12 * 4 = 48 weeks in a year
-        total_qalys += QOL_WEIGHT_REMISSION * (agent.total_remission_time / 48) \
+        total_qalys += QOL_WEIGHT_REMISSION * ((agent.total_remission_time + agent.total_recovery_time) / 48) \
                        + QOL_WEIGHT_RESPONSE * (agent.total_response_time / 48) \
                        + QOL_WEIGHT_NO_RESPONSE * ((agent.total_time_in_the_model - agent.total_remission_time - agent.total_response_time) / 48)
 
@@ -42,9 +42,7 @@ def direct_costs_per_patient(agents, treatment_config):
                 total_cost += min(time_in_state, 24) * maintenance_cost
             elif state in TREATMENTS:
                 total_cost += treatment_config["treatment_properties"][state]["treatment_cost"]
-            else:
-                # TODO: add recovery
-                pass
+
     return total_cost // len(agents)
 
 
@@ -52,8 +50,9 @@ def indirect_costs_per_patient(agents):
     total_cost = 0
     for agent in agents:
         # 714 is in EUR and is average weekly salary, percentages of unemployed people, 0.54 and 0.23, can be found
+        # 70% for government disability check -> 714 * 1.70 = 1214
         # in "Model Data" under "Functional impairment"
-        total_cost += ((agent.total_time_in_the_model - agent.total_remission_time) * 0.54 + agent.total_remission_time * 0.23) * 714
+        total_cost += ((agent.total_time_in_the_model - agent.total_remission_time) * 0.54 + agent.total_remission_time * 0.23) * 1214
     return total_cost // len(agents)
 
 
@@ -77,6 +76,7 @@ def aggregated_single_run_statistics(model, config, run_stats):
         "indirect_costs_per_patient": indirect_cost_per_patient,
         "total_costs_per_patient": direct_cost_per_patient + indirect_cost_per_patient,
         "remission_rate": 100 * run_stats[0][config['runspecs']['stoptime']]['percentage_in_remission'],
+        "recovery_rate": 100 * run_stats[0][config['runspecs']['stoptime']]['percentage_in_recovery'],
         "mean_treatment_level": mean_treatment_level(model.agents)
     }
 

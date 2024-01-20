@@ -77,7 +77,7 @@ class DepressionTreatmentHybridABSD(Model):
         # if time != 1.0:
         #     print(DepressionTreatmentHybridABSD.format_stats(self.statistics(), float(time) - 1.0))
 
-        print("TIME:", time)
+        # print("TIME:", time)
         # print("in_antidepressant_waiting_list", update_values['in_antidepressant_waiting_list'])
         # print("in_antidepressant_antipsychotic_waiting_list", update_values['in_antidepressant_antipsychotic_waiting_list'])
         # print("in_antipsychotic_waiting_list", update_values['in_antipsychotic_waiting_list'])
