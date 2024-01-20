@@ -12,22 +12,33 @@ class DepressionTreatmentHybridABSDWithoutEsketamine(Model):
 
         self.sd_model = None
         self.exchange = {}
-        self.exchange["depression_treatment_demand"] = 0
+
+        self.exchange["in_antidepressant_waiting_list"] = 0
+        self.exchange["in_antidepressant_antipsychotic_waiting_list"] = 0
+        self.exchange["in_antipsychotic_waiting_list"] = 0
+        self.exchange["in_esketamine_waiting_list"] = 0
+        self.exchange["in_ect_waiting_list"] = 0
 
         self.exchange["out_antidepressant"] = 0
         self.exchange["out_antidepressant_antipsychotic"] = 0
         self.exchange["out_antipsychotic"] = 0
+        self.exchange["out_esketamine"] = 0
         self.exchange["out_ect"] = 0
 
         self.exchange["in_remission"] = 0
-        self.exchange["out_remission"] = 0
         self.exchange["in_recovery"] = 0
-        self.exchange["out_recovery"] = 0
-        self.exchange["in_ect_waiting_list"] = 0
-        self.exchange["in_antidepressant_waiting_list"] = 0
 
-        self.treatments = {"antidepressant", "antidepressant_antipsychotic", "antipsychotic", "ect"}
+        self.exchange["out_remission"] = 0
+        self.exchange["out_recovery"] = 0
+
+        self.treatments = {"antidepressant", "antidepressant_antipsychotic", "antipsychotic", "esketamine", "ect"}
         self.relapse_function = PHQ9Analysis()
+
+        # These are based on Julia's percentages from the decision tree
+        self.first_line_treatment_waiting_list = ["antidepressant_waiting_list",
+                                                  "antidepressant_antipsychotic_waiting_list",
+                                                  "antipsychotic_waiting_list"]
+        self.first_line_treatment_allocation_percentage = [0.60, 0.35, 0.05]
 
     def configure(self, config):
         super().configure(config)
@@ -42,65 +53,48 @@ class DepressionTreatmentHybridABSDWithoutEsketamine(Model):
 
     def end_round(self, time, sim_round, step):
 
-        depression_treatment_demand = 0
+        in_antidepressant_waiting_list = 0
+        in_antidepressant_antipsychotic_waiting_list = 0
+        in_antipsychotic_waiting_list = 0
+        in_ect_waiting_list = 0
+
         out_antidepressant = 0
         out_antidepressant_antipsychotic = 0
         out_antipsychotic = 0
         out_ect = 0
 
         in_remission = 0
-        out_remission = 0
         in_recovery = 0
+
+        out_remission = 0
         out_recovery = 0
-        in_ect_waiting_list = 0
-        in_antidepressant_waiting_list = 0
 
         update_in_antidepressant = round(self.evaluate_equation("in_antidepressant", time))
         update_in_antidepressant_antipsychotic = round(self.evaluate_equation("in_antidepressant_antipsychotic", time))
         update_in_antipsychotic = round(self.evaluate_equation("in_antipsychotic", time))
         update_in_ect = round(self.evaluate_equation("in_ect", time))
 
-        update_values = {
-            'in_antidepressant_waiting_list': round(self.evaluate_equation("in_antidepressant_waiting_list", time)),
-            'in_antidepressant_antipsychotic_waiting_list': round(self.evaluate_equation("in_antidepressant_antipsychotic_waiting_list", time)),
-            'in_antipsychotic_waiting_list': round(self.evaluate_equation("in_antipsychotic_waiting_list", time))
-        }
-
-        # Debugging START
         # if time != 1.0:
         #     print(DepressionTreatmentHybridABSD.format_stats(self.statistics(), float(time) - 1.0))
-
-        # print("TIME:", time)
-        # print("in_antipsychotic_waiting_list", self.evaluate_equation("in_antipsychotic_waiting_list", time))
-        # print("antipsychotic_waiting_list", self.evaluate_equation("antipsychotic_waiting_list", time))
-        # print("in_antipsychotic", self.evaluate_equation("in_antipsychotic", time))
-        # print("antipsychotic", self.evaluate_equation("antipsychotic", time))
-        # print("out_antipsychotic", self.evaluate_equation("out_antipsychotic", time))
-
-        # print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
-        # Debugging END
 
         for agent in self.agents:
             agent.total_time_in_the_model += 1
             if agent.state == "untreated":
 
-                conditions_actions = [
-                    (lambda: update_values['in_antidepressant_waiting_list'] > 0,
-                     lambda: self.set_agent_state(agent, "antidepressant_waiting_list", update_values)),
-                    (lambda: update_values['in_antidepressant_antipsychotic_waiting_list'] > 0,
-                     lambda: self.set_agent_state(agent, "antidepressant_antipsychotic_waiting_list", update_values)),
-                    (lambda: update_values['in_antipsychotic_waiting_list'] > 0,
-                     lambda: self.set_agent_state(agent, "antipsychotic_waiting_list", update_values))
-                ]
-                random.shuffle(conditions_actions)
+                waiting_list_allocation = random.choices(
+                    population=self.first_line_treatment_waiting_list,
+                    weights=self.first_line_treatment_allocation_percentage,
+                    k=1
+                )[0]
 
-                # Iterate and execute the first true condition
-                for condition, action in conditions_actions:
-                    if condition():
-                        action()
-                        break
+                agent.state = waiting_list_allocation
+                agent.current_waiting_time = 0
+                if waiting_list_allocation == "antidepressant_waiting_list":
+                    in_antidepressant_waiting_list += 1
+                elif waiting_list_allocation == "antidepressant_antipsychotic_waiting_list":
+                    in_antidepressant_antipsychotic_waiting_list += 1
                 else:
-                    depression_treatment_demand += 1
+                    in_antipsychotic_waiting_list += 1
 
             if "waiting_list" in agent.state:
                 if agent.state == "antidepressant_waiting_list" and update_in_antidepressant > 0:
@@ -134,7 +128,6 @@ class DepressionTreatmentHybridABSDWithoutEsketamine(Model):
 
                 if agent.current_in_treatment_time >= self.treatment_properties[agent.state]["duration"]:
 
-                    # todo: Is it correct
                     if len(agent.treatment_history) > 0 and agent.treatment_history[-1][0] == "response":
                         agent.total_response_time += agent.current_in_treatment_time
 
@@ -202,6 +195,7 @@ class DepressionTreatmentHybridABSDWithoutEsketamine(Model):
                     agent.state = "untreated"
                     agent.current_in_remission_time = 0
                     out_remission += 1
+
                 # Recovery after 6 months (6 * 4 = 24 weeks)
                 elif agent.current_in_remission_time >= 24:
                     agent.state = "recovery"
@@ -227,7 +221,10 @@ class DepressionTreatmentHybridABSDWithoutEsketamine(Model):
                     agent.current_in_recovery_time = 0
                     out_recovery += 1
 
-        self.exchange["depression_treatment_demand"] = depression_treatment_demand
+        self.exchange["in_antidepressant_waiting_list"] = in_antidepressant_waiting_list
+        self.exchange["in_antidepressant_antipsychotic_waiting_list"] = in_antidepressant_antipsychotic_waiting_list
+        self.exchange["in_antipsychotic_waiting_list"] = in_antipsychotic_waiting_list
+        self.exchange["in_ect_waiting_list"] = in_ect_waiting_list
 
         self.exchange["out_antidepressant"] = out_antidepressant
         self.exchange["out_antidepressant_antipsychotic"] = out_antidepressant_antipsychotic
@@ -235,19 +232,12 @@ class DepressionTreatmentHybridABSDWithoutEsketamine(Model):
         self.exchange["out_ect"] = out_ect
 
         self.exchange["in_remission"] = in_remission
-        self.exchange["out_remission"] = out_remission
         self.exchange["in_recovery"] = in_recovery
+
+        self.exchange["out_remission"] = out_remission
         self.exchange["out_recovery"] = out_recovery
 
-        self.exchange["in_ect_waiting_list"] = in_ect_waiting_list
-        self.exchange["in_antidepressant_waiting_list"] = in_antidepressant_waiting_list
-
         self.create_agents({"name": "person", "count": self.new_patients_per_week})
-
-    def set_agent_state(self, agent, state, update_values):
-        agent.state = state
-        agent.current_waiting_time = 0
-        update_values["in_" + state] -= 1
 
     @staticmethod
     def format_stats(input_dict, time):

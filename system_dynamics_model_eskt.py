@@ -57,9 +57,6 @@ class DepressionTreatmentSystemDynamics:
         self.in_recovery = model.flow("in_recovery")
         self.out_recovery = model.flow("out_recovery")
 
-        # # Converters
-        self.depression_treatment_demand = model.converter("depression_treatment_demand")
-
         # # Constants
         self.antidepressant_allocation_percentage = model.constant("antidepressant_allocation_percentage")
         self.antidepressant_antipsychotic_allocation_percentage = model.constant(
@@ -93,19 +90,14 @@ class DepressionTreatmentSystemDynamics:
         self.remission.equation = self.in_remission - self.out_remission
         self.recovery.equation = self.in_recovery - self.out_recovery
 
-        # Interesting part:
-        # Gets the demand from the AB model
-        self.depression_treatment_demand.equation = self.model.function("depression_treatment_demand_update",
-            lambda m, t: m.exchange["depression_treatment_demand"])()
-
-        # These are based on Julia's percentages from the decision tree
+        # # Interesting part:
         # Enter first-line waiting lists
         self.in_antidepressant_waiting_list.equation = self.model.function("in_antidepressant_waiting_list_update",
-            lambda m, t, antidepressant_allocation_percentage, depression_treatment_demand:
-            m.exchange["in_antidepressant_waiting_list"] +
-            antidepressant_allocation_percentage * depression_treatment_demand)(self.antidepressant_allocation_percentage, self.depression_treatment_demand)
-        self.in_antidepressant_antipsychotic_waiting_list.equation = self.antidepressant_antipsychotic_allocation_percentage * self.depression_treatment_demand
-        self.in_antipsychotic_waiting_list.equation = self.antipsychotic_allocation_percentage * self.depression_treatment_demand
+            lambda m, t: m.exchange["in_antidepressant_waiting_list"])()
+        self.in_antidepressant_antipsychotic_waiting_list.equation = self.model.function("in_antidepressant_antipsychotic_waiting_list_update",
+            lambda m, t: m.exchange["in_antidepressant_antipsychotic_waiting_list"])()
+        self.in_antipsychotic_waiting_list.equation = self.model.function("in_antipsychotic_waiting_list_update",
+            lambda m, t: m.exchange["in_antipsychotic_waiting_list"])()
 
         # Starting first-line treatment
         self.out_antidepressant_waiting_list.equation = sd.min(self.antidepressant_waiting_list, self.antidepressant_capacity - self.antidepressant)
@@ -164,10 +156,3 @@ class DepressionTreatmentSystemDynamics:
         # Exit recovery
         self.out_recovery.equation = self.model.function("out_recovery_update",
             lambda m, t: m.exchange["out_recovery"])()
-
-        # # Initial values
-        # NOTE: These values are from Julia's decision tree thingy, probably going to change
-        # TODO: don't use hard cutoffs because then AP can only be seen when there are more than 20 patients per week
-        self.antidepressant_allocation_percentage.equation = 0.60
-        self.antidepressant_antipsychotic_allocation_percentage.equation = 0.35
-        self.antipsychotic_allocation_percentage.equation = 0.05
