@@ -1,11 +1,10 @@
 from BPTK_Py import SimultaneousScheduler
-from data_collection import PatientDataCollector
-import statistics as custom_stats
-from hybrid_ABSD_model_eskt import DepressionTreatmentHybridABSD
-from hybrid_ABSD_model_no_eskt import DepressionTreatmentHybridABSDWithoutEsketamine
+from utils.data_collection import PatientDataCollector
+from models.hybrid_ABSD_model_eskt import DepressionTreatmentHybridABSD
+from models.hybrid_ABSD_model_no_eskt import DepressionTreatmentHybridABSDWithoutEsketamine
 from utils.capacity_allocation import capacity_allocation
 from tqdm import tqdm
-import plotter
+from utils import plotter, statistics as custom_stats
 import json
 import os
 from datetime import datetime
@@ -33,13 +32,13 @@ if __name__ == "__main__":
 
     # Parameters
     CONFIG_FILE = "config_eskt.json"
-    NUM_SIMULATIONS = 3
+    NUM_SIMULATIONS = 4
     SAVE_FILE = "aggregated_results.json"
     ESKETAMINE_FRACTION = 0.5
 
     # Load config file
     pwd = os.path.dirname(os.path.realpath(__file__))
-    config_file_path = os.path.join(pwd, "configs", CONFIG_FILE)
+    config_file_path = os.path.join(pwd, "../configs", CONFIG_FILE)
     with open(config_file_path, 'r') as file:
         config_eskt = json.load(file)
 
@@ -64,7 +63,7 @@ if __name__ == "__main__":
         model = DepressionTreatmentHybridABSDWithoutEsketamine(name="ETreatment pathway without Esketamie", scheduler=SimultaneousScheduler(), data_collector=PatientDataCollector())
         runs["without_esketamine"][f"sim_run_{sim_num}"] = run(model, config_no_eskt)
 
-    save_file_path = os.path.join(pwd, "results", "runs_data_dump.json")
+    save_file_path = os.path.join(pwd, "../results", "runs_data_dump.json")
     with open(save_file_path, 'w') as file:
         json.dump(runs, file, indent=4)
 
@@ -77,7 +76,7 @@ if __name__ == "__main__":
     aggregated_statistics_results["metadata"]["with_esketamine_config"] = config_eskt
     aggregated_statistics_results["metadata"]["without_esketamine_config"] = config_no_eskt
 
-    save_file_path = os.path.join(pwd, "results", SAVE_FILE)
+    save_file_path = os.path.join(pwd, "../results", SAVE_FILE)
     with open(save_file_path, 'w') as file:
         json.dump(aggregated_statistics_results, file, indent=4)
 

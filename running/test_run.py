@@ -1,8 +1,7 @@
 from BPTK_Py import SimultaneousScheduler
-from data_collection import PatientDataCollector
-from hybrid_ABSD_model_no_eskt import DepressionTreatmentHybridABSDWithoutEsketamine
-from hybrid_ABSD_model_eskt import DepressionTreatmentHybridABSD
-import plotter
+from utils.data_collection import PatientDataCollector
+from models.hybrid_ABSD_model_eskt import DepressionTreatmentHybridABSD
+from utils import plotter
 import json
 import os
 
@@ -16,7 +15,7 @@ if __name__ == "__main__":
 
     # Load config file
     pwd = os.path.dirname(os.path.realpath(__file__))
-    file_path = os.path.join(pwd, "configs", config_file)
+    file_path = os.path.join(pwd, "../configs", config_file)
     with open(file_path, 'r') as file:
         depression_treatment_hybrid_config = json.load(file)
 

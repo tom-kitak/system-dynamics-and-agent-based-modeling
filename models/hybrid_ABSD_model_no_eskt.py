@@ -1,11 +1,11 @@
 from BPTK_Py import Model
-from system_dynamics_model_eskt import DepressionTreatmentSystemDynamics
-from agent_based_model import Person
+from models.system_dynamics_model_no_eskt import DepressionTreatmentSystemDynamicsWithoutEsketamine
+from models.agent_based_model import Person
 from utils.phq_analysis import PHQ9Analysis
 import random
 
 
-class DepressionTreatmentHybridABSD(Model):
+class DepressionTreatmentHybridABSDWithoutEsketamine(Model):
     def instantiate_model(self):
         super().instantiate_model()
         self.register_agent_factory("person", lambda agent_id, model, properties: Person(agent_id, model, properties))
@@ -42,14 +42,13 @@ class DepressionTreatmentHybridABSD(Model):
 
     def configure(self, config):
         super().configure(config)
-        self.sd_model = DepressionTreatmentSystemDynamics(self)
+        self.sd_model = DepressionTreatmentSystemDynamicsWithoutEsketamine(self)
         self.treatment_properties = config["treatment_properties"]
         self.new_patients_per_week = config["new_patients_per_week"]
 
         self.sd_model.antidepressant_capacity.equation = self.treatment_properties["antidepressant"]["capacity"]
         self.sd_model.antidepressant_antipsychotic_capacity.equation = self.treatment_properties["antidepressant_antipsychotic"]["capacity"]
         self.sd_model.antipsychotic_capacity.equation = self.treatment_properties["antipsychotic"]["capacity"]
-        self.sd_model.esketamine_capacity.equation = self.treatment_properties["esketamine"]["capacity"]
         self.sd_model.ect_capacity.equation = self.treatment_properties["ect"]["capacity"]
 
     def end_round(self, time, sim_round, step):
@@ -57,13 +56,11 @@ class DepressionTreatmentHybridABSD(Model):
         in_antidepressant_waiting_list = 0
         in_antidepressant_antipsychotic_waiting_list = 0
         in_antipsychotic_waiting_list = 0
-        in_esketamine_waiting_list = 0
         in_ect_waiting_list = 0
 
         out_antidepressant = 0
         out_antidepressant_antipsychotic = 0
         out_antipsychotic = 0
-        out_esketamine = 0
         out_ect = 0
 
         in_remission = 0
@@ -75,8 +72,6 @@ class DepressionTreatmentHybridABSD(Model):
         update_in_antidepressant = round(self.evaluate_equation("in_antidepressant", time))
         update_in_antidepressant_antipsychotic = round(self.evaluate_equation("in_antidepressant_antipsychotic", time))
         update_in_antipsychotic = round(self.evaluate_equation("in_antipsychotic", time))
-
-        update_in_esketamine = round(self.evaluate_equation("in_esketamine", time))
         update_in_ect = round(self.evaluate_equation("in_ect", time))
 
         # if time != 1.0:
@@ -120,12 +115,6 @@ class DepressionTreatmentHybridABSD(Model):
                     agent.current_waiting_time = 0
                     agent.current_in_treatment_time = 0
                     update_in_antipsychotic -= 1
-                elif agent.state == "esketamine_waiting_list" and update_in_esketamine > 0:
-                    agent.state = "esketamine"
-                    agent.total_waiting_time += agent.current_waiting_time
-                    agent.current_waiting_time = 0
-                    agent.current_in_treatment_time = 0
-                    update_in_esketamine -= 1
                 elif agent.state == "ect_waiting_list" and update_in_ect > 0:
                     agent.state = "ect"
                     agent.total_waiting_time += agent.current_waiting_time
@@ -158,8 +147,6 @@ class DepressionTreatmentHybridABSD(Model):
                             out_antidepressant_antipsychotic += 1
                         elif agent.state == "antipsychotic":
                             out_antipsychotic += 1
-                        elif agent.state == "esketamine":
-                            out_esketamine += 1
                         elif agent.state == "ect":
                             out_ect += 1
                         else:
@@ -176,18 +163,14 @@ class DepressionTreatmentHybridABSD(Model):
                         # Fail -> Enter next treatment waiting list
                         if agent.state == "antidepressant":
                             out_antidepressant += 1
-                            agent.state = "esketamine_waiting_list"
-                            in_esketamine_waiting_list += 1
+                            agent.state = "ect_waiting_list"
+                            in_ect_waiting_list += 1
                         elif agent.state == "antidepressant_antipsychotic":
                             out_antidepressant_antipsychotic += 1
-                            agent.state = "esketamine_waiting_list"
-                            in_esketamine_waiting_list += 1
+                            agent.state = "ect_waiting_list"
+                            in_ect_waiting_list += 1
                         elif agent.state == "antipsychotic":
                             out_antipsychotic += 1
-                            agent.state = "esketamine_waiting_list"
-                            in_esketamine_waiting_list += 1
-                        elif agent.state == "esketamine":
-                            out_esketamine += 1
                             agent.state = "ect_waiting_list"
                             in_ect_waiting_list += 1
                         elif agent.state == "ect":
@@ -202,8 +185,10 @@ class DepressionTreatmentHybridABSD(Model):
                 agent.treatment_history[-1][1] = agent.current_in_remission_time
                 treatment_that_got_you_in_remission = agent.treatment_history[-2][0]
 
-                relapse_probability = self.relapse_function.get_prob_at_time(t=agent.current_in_remission_time-1,
-                                                                             p=self.treatment_properties[treatment_that_got_you_in_remission]["relapse_rate"],
+                relapse_probability = self.relapse_function.get_prob_at_time(t=agent.current_in_remission_time - 1,
+                                                                             p=self.treatment_properties[
+                                                                                 treatment_that_got_you_in_remission][
+                                                                                 "relapse_rate"],
                                                                              type="maintenance")
                 if random.random() < relapse_probability:
                     # Relapse occurs -> Back to the start of the pipeline
@@ -239,13 +224,11 @@ class DepressionTreatmentHybridABSD(Model):
         self.exchange["in_antidepressant_waiting_list"] = in_antidepressant_waiting_list
         self.exchange["in_antidepressant_antipsychotic_waiting_list"] = in_antidepressant_antipsychotic_waiting_list
         self.exchange["in_antipsychotic_waiting_list"] = in_antipsychotic_waiting_list
-        self.exchange["in_esketamine_waiting_list"] = in_esketamine_waiting_list
         self.exchange["in_ect_waiting_list"] = in_ect_waiting_list
 
         self.exchange["out_antidepressant"] = out_antidepressant
         self.exchange["out_antidepressant_antipsychotic"] = out_antidepressant_antipsychotic
         self.exchange["out_antipsychotic"] = out_antipsychotic
-        self.exchange["out_esketamine"] = out_esketamine
         self.exchange["out_ect"] = out_ect
 
         self.exchange["in_remission"] = in_remission
@@ -271,8 +254,6 @@ class DepressionTreatmentHybridABSD(Model):
             "antidepressant_antipsychotic",
             "antipsychotic_waiting_list",
             "antipsychotic",
-            "esketamine_waiting_list",
-            "esketamine",
             "ect_waiting_list",
             "ect",
             "remission",
