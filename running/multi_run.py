@@ -34,7 +34,7 @@ if __name__ == "__main__":
     CONFIG_FILE = "config_eskt.json"
     NUM_SIMULATIONS = 4
     SAVE_FILE = "aggregated_results.json"
-    ESKETAMINE_FRACTION = 0.5
+    ESKETAMINE_FRACTION = 0.2
 
     # Load config file
     pwd = os.path.dirname(os.path.realpath(__file__))
@@ -81,7 +81,7 @@ if __name__ == "__main__":
         json.dump(aggregated_statistics_results, file, indent=4)
 
     # Plotting
-    plotter.plot_num_of_people_on_waiting_list_mean_multi_run(runs)
+    plotter.plot_num_of_people_on_waiting_list_mean_multi_run(runs, esketamine_fraction=ESKETAMINE_FRACTION)
     plotter.plot_num_of_people_on_waiting_list_mean_multi_run(runs, with_or_without_esketamine="without_esketamine")
-    plotter.plot_percentage_in_remission_multi_run(runs)
-    plotter.plot_percentage_in_recovery_multi_run(runs)
+    plotter.plot_percentage_in_remission_multi_run(runs, esketamine_fraction=ESKETAMINE_FRACTION)
+    plotter.plot_percentage_in_recovery_multi_run(runs, esketamine_fraction=ESKETAMINE_FRACTION)

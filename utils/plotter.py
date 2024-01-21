@@ -3,7 +3,7 @@ import numpy as np
 from scipy.stats import sem
 
 
-def plot_percentage_in_recovery_multi_run(runs, plot_confidence_interval=True):
+def plot_percentage_in_recovery_multi_run(runs, plot_confidence_interval=True, esketamine_fraction=0.2):
     aggregated_data = dict()
     aggregated_data["with_esketamine"] = dict()
     aggregated_data["without_esketamine"] = dict()
@@ -60,7 +60,7 @@ def plot_percentage_in_recovery_multi_run(runs, plot_confidence_interval=True):
     # Adding labels and title
     plt.xlabel('Weeks')
     plt.ylabel('Recovery rate')
-    plt.title('Recovery rates with and without Esketamine')
+    plt.title(f'Recovery rates without and with {int(100 * esketamine_fraction)}% of capacity slots going to Esketamine')
     plt.legend()
     plt.grid(True)
 
@@ -68,7 +68,7 @@ def plot_percentage_in_recovery_multi_run(runs, plot_confidence_interval=True):
     plt.show()
 
 
-def plot_percentage_in_remission_multi_run(runs, plot_confidence_interval=True):
+def plot_percentage_in_remission_multi_run(runs, plot_confidence_interval=True, esketamine_fraction=0.2):
     aggregated_data = dict()
     aggregated_data["with_esketamine"] = dict()
     aggregated_data["without_esketamine"] = dict()
@@ -125,7 +125,7 @@ def plot_percentage_in_remission_multi_run(runs, plot_confidence_interval=True):
     # Adding labels and title
     plt.xlabel('Weeks')
     plt.ylabel('Remission rate')
-    plt.title('Remission rates with and without Esketamine')
+    plt.title(f'Remission rates without and with {int(100 * esketamine_fraction)}% of capacity slots going to Esketamine')
     plt.legend()
     plt.grid(True)
 
@@ -133,7 +133,7 @@ def plot_percentage_in_remission_multi_run(runs, plot_confidence_interval=True):
     plt.show()
 
 
-def plot_num_of_people_on_waiting_list_mean_multi_run(runs, with_or_without_esketamine="with_esketamine"):
+def plot_num_of_people_on_waiting_list_mean_multi_run(runs, with_or_without_esketamine="with_esketamine", esketamine_fraction=0.2):
 
     aggregated_data = dict()
 
@@ -175,7 +175,7 @@ def plot_num_of_people_on_waiting_list_mean_multi_run(runs, with_or_without_eske
     plt.xlabel('Weeks')
     plt.ylabel('Number of People on a Waiting List')
     if with_or_without_esketamine == "with_esketamine":
-        plt.title('Number of people in each waiting list over time with Esketamine')
+        plt.title(f'Number of people in each waiting list over time with {int(100 * esketamine_fraction)}% of capacity going to Esketamine')
     else:
         plt.title('Number of people in each waiting list over time without Esketamine')
     plt.legend()

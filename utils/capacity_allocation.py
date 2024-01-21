@@ -17,4 +17,6 @@ def capacity_allocation(config, esketamine_fraction=0.2):
     config["treatment_properties"]["antipsychotic"]["capacity"] = round(total * fraction * config["capacities"]["antipsychotic"])
     config["treatment_properties"]["ect"]["capacity"] = round(total * fraction * config["capacities"]["ect"])
 
+    config["capacities"]["esketamine"] = esketamine_fraction
+
     return config

@@ -9,7 +9,7 @@
    "agents":[
       {
          "name":"person",
-         "count":1000
+         "count":1156
       }
    ],
    "new_patients_per_week":1,
