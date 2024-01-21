@@ -3,10 +3,12 @@ from data_collection import PatientDataCollector
 import statistics as custom_stats
 from hybrid_ABSD_model_eskt import DepressionTreatmentHybridABSD
 from hybrid_ABSD_model_no_eskt import DepressionTreatmentHybridABSDWithoutEsketamine
+from utils.capacity_allocation import capacity_allocation
 from tqdm import tqdm
 import plotter
 import json
 import os
+from datetime import datetime
 
 
 def run(model, config):
@@ -23,18 +25,30 @@ def run(model, config):
     return model_results_stats
 
 
+def add_metadata(runs):
+    pass
+
+
 if __name__ == "__main__":
 
     # Parameters
     CONFIG_FILE = "config_eskt.json"
     NUM_SIMULATIONS = 3
     SAVE_FILE = "aggregated_results.json"
+    ESKETAMINE_FRACTION = 0.5
 
     # Load config file
     pwd = os.path.dirname(os.path.realpath(__file__))
     config_file_path = os.path.join(pwd, "configs", CONFIG_FILE)
     with open(config_file_path, 'r') as file:
-        config = json.load(file)
+        config_eskt = json.load(file)
+
+    with open(config_file_path, 'r') as file:
+        config_no_eskt = json.load(file)
+
+    # Esketamine percentages
+    capacity_allocation(config_eskt, esketamine_fraction=ESKETAMINE_FRACTION)
+    capacity_allocation(config_no_eskt, esketamine_fraction=0.0)
 
     runs = dict()
     runs["with_esketamine"] = {}
@@ -43,18 +57,25 @@ if __name__ == "__main__":
     print("Running with Esketamine")
     for sim_num in tqdm(range(NUM_SIMULATIONS)):
         model = DepressionTreatmentHybridABSD(name="Treatment pathway with Esketamie", scheduler=SimultaneousScheduler(), data_collector=PatientDataCollector())
-        runs["with_esketamine"][f"sim_run_{sim_num}"] = run(model, config)
+        runs["with_esketamine"][f"sim_run_{sim_num}"] = run(model, config_eskt)
 
     print("Running without Esketamine")
     for sim_num in tqdm(range(NUM_SIMULATIONS)):
         model = DepressionTreatmentHybridABSDWithoutEsketamine(name="ETreatment pathway without Esketamie", scheduler=SimultaneousScheduler(), data_collector=PatientDataCollector())
-        runs["without_esketamine"][f"sim_run_{sim_num}"] = run(model, config)
+        runs["without_esketamine"][f"sim_run_{sim_num}"] = run(model, config_no_eskt)
 
     save_file_path = os.path.join(pwd, "results", "runs_data_dump.json")
     with open(save_file_path, 'w') as file:
         json.dump(runs, file, indent=4)
 
     aggregated_statistics_results = custom_stats.aggregated_statistics(runs)
+
+    # Add metadata
+    now = datetime.now().strftime("%d-%m-%Y %H:%M:%S")
+    aggregated_statistics_results["metadata"] = dict()
+    aggregated_statistics_results["metadata"]["timedate"] = now
+    aggregated_statistics_results["metadata"]["with_esketamine_config"] = config_eskt
+    aggregated_statistics_results["metadata"]["without_esketamine_config"] = config_no_eskt
 
     save_file_path = os.path.join(pwd, "results", SAVE_FILE)
     with open(save_file_path, 'w') as file:
