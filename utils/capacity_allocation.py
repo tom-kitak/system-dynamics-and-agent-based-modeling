@@ -12,10 +12,15 @@ def capacity_allocation(config, esketamine_fraction=0.2):
 
     fraction = dynamic_fraction_left / config_fraction_left
 
-    config["treatment_properties"]["antidepressant"]["capacity"] = round(total * fraction * config["capacities"]["antidepressant"])
-    config["treatment_properties"]["antidepressant_antipsychotic"]["capacity"] = round(total * fraction * config["capacities"]["antidepressant_antipsychotic"])
-    config["treatment_properties"]["antipsychotic"]["capacity"] = round(total * fraction * config["capacities"]["antipsychotic"])
-    config["treatment_properties"]["ect"]["capacity"] = round(total * fraction * config["capacities"]["ect"])
+    config["capacities"]["antidepressant"] = fraction * config["capacities"]["antidepressant"]
+    config["capacities"]["antidepressant_antipsychotic"] = fraction * config["capacities"]["antidepressant_antipsychotic"]
+    config["capacities"]["antipsychotic"] = fraction * config["capacities"]["antipsychotic"]
+    config["capacities"]["ect"] = fraction * config["capacities"]["ect"]
+
+    config["treatment_properties"]["antidepressant"]["capacity"] = round(total * config["capacities"]["antidepressant"])
+    config["treatment_properties"]["antidepressant_antipsychotic"]["capacity"] = round(total * config["capacities"]["antidepressant_antipsychotic"])
+    config["treatment_properties"]["antipsychotic"]["capacity"] = round(total * config["capacities"]["antipsychotic"])
+    config["treatment_properties"]["ect"]["capacity"] = round(total * config["capacities"]["ect"])
 
     config["capacities"]["esketamine"] = esketamine_fraction
 
