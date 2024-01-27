@@ -32,7 +32,7 @@ if __name__ == "__main__":
 
     # Parameters
     CONFIG_FILE = "config_eskt.json"
-    NUM_SIMULATIONS = 4
+    NUM_SIMULATIONS = 30
     SAVE_FILE = "aggregated_results.json"
     ESKETAMINE_FRACTION = 0.2
 
