@@ -84,24 +84,19 @@ def aggregated_single_run_statistics(model, config, run_stats):
 def aggregated_statistics(aggr_run_stats, confidence_level=0.95):
 
     aggr_stats_results = dict()
-    aggr_stats_results["pipelines_comparison"] = {}
-    aggr_stats_results["with_esketamine"] = {}
-    aggr_stats_results["without_esketamine"] = {}
-
-    for data_point_type in aggr_run_stats["with_esketamine"][f"sim_run_0"]["aggregated_run_statistics"]:
-
-        aggr_stats_results["with_esketamine"][data_point_type] = {}
-        aggr_stats_results["without_esketamine"][data_point_type] = {}
-
-        aggr_stats_results["with_esketamine"][data_point_type]["dataset"] = []
-        aggr_stats_results["without_esketamine"][data_point_type]["dataset"] = []
 
     for eskt_or_not in aggr_run_stats:
+        aggr_stats_results[eskt_or_not] = dict()
+
+        for data_point_type in aggr_run_stats[eskt_or_not][f"sim_run_0"]["aggregated_run_statistics"]:
+
+            aggr_stats_results[eskt_or_not][data_point_type] = dict()
+            aggr_stats_results[eskt_or_not][data_point_type]["dataset"] = []
+
         for run_num, run_data in aggr_run_stats[eskt_or_not].items():
             for data_point_type, v in run_data["aggregated_run_statistics"].items():
                 aggr_stats_results[eskt_or_not][data_point_type]["dataset"].append(v)
 
-    for eskt_or_not in aggr_stats_results:
         for data_point_type in aggr_stats_results[eskt_or_not]:
             dataset = aggr_stats_results[eskt_or_not][data_point_type]["dataset"]
             mean = np.mean(dataset)
@@ -115,23 +110,31 @@ def aggregated_statistics(aggr_run_stats, confidence_level=0.95):
             aggr_stats_results[eskt_or_not][data_point_type]["standard_error_of_the_mean"] = standard_error_of_the_mean
             aggr_stats_results[eskt_or_not][data_point_type][F"confidence_interval_{confidence_level}"] = confidence_interval
 
-    aggr_stats_results["pipelines_comparison"]["incremental_cost_effectiveness_ratio"] = {}
-    aggr_stats_results["pipelines_comparison"]["incremental_cost_effectiveness_ratio"]["dataset"] = []
-    aggr_stats_results["pipelines_comparison"]["net_monetary_benefit"] = {}
-    aggr_stats_results["pipelines_comparison"]["net_monetary_benefit"]["dataset"] = []
+    aggr_stats_results["pipelines_comparison"] = dict()
 
-    for run_num in range(len(aggr_stats_results["with_esketamine"]["average_qalys"]["dataset"])):
-        run_incremental_effectiveness = \
-            aggr_stats_results["with_esketamine"]["average_qalys"]["dataset"][run_num] - aggr_stats_results["without_esketamine"]["average_qalys"]["dataset"][run_num]
+    for eskt_or_not in aggr_run_stats:
+        if "%" not in eskt_or_not:
+            # continue because it is without eskt
+            continue
+        icer_key = f"{eskt_or_not}_incremental_cost_effectiveness_ratio"
+        nmb_key = f"{eskt_or_not}_net_monetary_benefit"
+        aggr_stats_results["pipelines_comparison"][icer_key] = {}
+        aggr_stats_results["pipelines_comparison"][icer_key]["dataset"] = []
+        aggr_stats_results["pipelines_comparison"][nmb_key] = {}
+        aggr_stats_results["pipelines_comparison"][nmb_key]["dataset"] = []
 
-        run_incremental_cost = \
-            aggr_stats_results["with_esketamine"]["total_costs_per_patient"]["dataset"][run_num] - aggr_stats_results["without_esketamine"]["total_costs_per_patient"]["dataset"][run_num]
+        for run_num in range(len(aggr_stats_results[eskt_or_not]["average_qalys"]["dataset"])):
+            run_incremental_effectiveness = \
+                aggr_stats_results[eskt_or_not]["average_qalys"]["dataset"][run_num] - aggr_stats_results["without_esketamine"]["average_qalys"]["dataset"][run_num]
 
-        run_icer = run_incremental_cost / run_incremental_effectiveness
-        aggr_stats_results["pipelines_comparison"]["incremental_cost_effectiveness_ratio"]["dataset"].append(run_icer)
+            run_incremental_cost = \
+                aggr_stats_results[eskt_or_not]["total_costs_per_patient"]["dataset"][run_num] - aggr_stats_results["without_esketamine"]["total_costs_per_patient"]["dataset"][run_num]
 
-        nmb = WILLINGNESS_TO_PAY_THRESHOLD * run_incremental_effectiveness - run_incremental_cost
-        aggr_stats_results["pipelines_comparison"]["net_monetary_benefit"]["dataset"].append(nmb)
+            run_icer = run_incremental_cost / run_incremental_effectiveness
+            aggr_stats_results["pipelines_comparison"][icer_key]["dataset"].append(run_icer)
+
+            nmb = WILLINGNESS_TO_PAY_THRESHOLD * run_incremental_effectiveness - run_incremental_cost
+            aggr_stats_results["pipelines_comparison"][nmb_key]["dataset"].append(nmb)
 
     for comparison_stats in aggr_stats_results["pipelines_comparison"]:
         dataset = aggr_stats_results["pipelines_comparison"][comparison_stats]["dataset"]

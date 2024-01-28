@@ -3,38 +3,39 @@ import numpy as np
 from scipy.stats import sem
 
 
-def plot_percentage_in_recovery_multi_run(runs, plot_confidence_interval=True, esketamine_fraction=0.2):
+def plot_percentage_in_recovery_multi_run(runs, plot_confidence_interval=True, after_weeks=0):
     aggregated_data = dict()
-    aggregated_data["with_esketamine"] = dict()
-    aggregated_data["without_esketamine"] = dict()
 
-    for with_or_without_esketamine in ["with_esketamine", "without_esketamine"]:
-        for sim_num in runs[with_or_without_esketamine]:
-            for time_step in runs[with_or_without_esketamine][sim_num]["run_statistics"][0]:
-                if time_step not in aggregated_data[with_or_without_esketamine]:
-                    aggregated_data[with_or_without_esketamine][time_step] = dict()
-                if "sim_dataset" not in aggregated_data[with_or_without_esketamine][time_step]:
-                    aggregated_data[with_or_without_esketamine][time_step]["sim_dataset"] = []
+    for run_name in runs:
+        aggregated_data[run_name] = dict()
 
-                aggregated_data[with_or_without_esketamine][time_step]["sim_dataset"]\
-                    .append(runs[with_or_without_esketamine][sim_num]["run_statistics"][0][time_step]["percentage_in_recovery"])
+        for sim_num in runs[run_name]:
+            for time_step in runs[run_name][sim_num]["run_statistics"][0]:
+                if time_step not in aggregated_data[run_name]:
+                    aggregated_data[run_name][time_step] = dict()
+                if "sim_dataset" not in aggregated_data[run_name][time_step]:
+                    aggregated_data[run_name][time_step]["sim_dataset"] = []
 
-    for with_or_without_esketamine in ["with_esketamine", "without_esketamine"]:
-        for time_step in aggregated_data[with_or_without_esketamine]:
-            aggregated_data[with_or_without_esketamine][time_step]["mean"] = np.mean(aggregated_data[with_or_without_esketamine][time_step]["sim_dataset"])
+                aggregated_data[run_name][time_step]["sim_dataset"]\
+                    .append(runs[run_name][sim_num]["run_statistics"][0][time_step]["percentage_in_recovery"])
+
+    for run_name in runs:
+        for time_step in aggregated_data[run_name]:
+            aggregated_data[run_name][time_step]["mean"] = np.mean(aggregated_data[run_name][time_step]["sim_dataset"])
             if plot_confidence_interval:
                 # Calculate standard error of the mean (SEM)
-                aggregated_data[with_or_without_esketamine][time_step]["sem"] = sem(
-                    aggregated_data[with_or_without_esketamine][time_step]["sim_dataset"])
+                aggregated_data[run_name][time_step]["sem"] = sem(
+                    aggregated_data[run_name][time_step]["sim_dataset"])
 
-    weeks = list(aggregated_data["with_esketamine"].keys())
-    with_esketamine_recovery_rates = np.array(
-        [aggregated_data["with_esketamine"][time_step]["mean"] for time_step in weeks])
-    with_esketamine_sems = np.array([aggregated_data["with_esketamine"][time_step]["sem"] for time_step in weeks])
+    weeks = list(aggregated_data["without_esketamine"].keys())
 
-    without_esketamine_recovery_rates = np.array(
-        [aggregated_data["without_esketamine"][time_step]["mean"] for time_step in weeks])
-    without_esketamine_sems = np.array([aggregated_data["without_esketamine"][time_step]["sem"] for time_step in weeks])
+    plot_results = dict()
+    for run_name in runs:
+        plot_results[run_name + "_recovery_rates"] = np.array([aggregated_data[run_name][time_step]["mean"] for time_step in weeks])
+        plot_results[run_name + "_sems"] = np.array([aggregated_data[run_name][time_step]["sem"] for time_step in weeks])
+
+        plot_results[run_name + "_recovery_rates"] = plot_results[run_name + "_recovery_rates"][after_weeks:]
+        plot_results[run_name + "_sems"] = plot_results[run_name + "_sems"][after_weeks:]
 
     # Z-score for 95% confidence
     z_score = 1.96
@@ -42,25 +43,22 @@ def plot_percentage_in_recovery_multi_run(runs, plot_confidence_interval=True, e
     # Creating the plot
     plt.figure()
 
-    # Plotting the mean recoveryn rates
-    plt.plot(weeks, with_esketamine_recovery_rates, label='Recovery rates with Esketamine', color='blue')
-    plt.plot(weeks, without_esketamine_recovery_rates, label='Recovery rates without Esketamine', color='red')
+    # Plotting the mean recovery rates
+    if after_weeks > 0:
+        weeks = weeks[:-after_weeks]
 
-    # Adding confidence intervals
-    plt.fill_between(weeks,
-                     with_esketamine_recovery_rates - z_score * with_esketamine_sems,
-                     with_esketamine_recovery_rates + z_score * with_esketamine_sems,
-                     color='blue', alpha=0.1)
+    for run_name in runs:
+        run_key = run_name + "_recovery_rates"
+        plt.plot(weeks, plot_results[run_key], label=run_key.replace("_", " "))
 
-    plt.fill_between(weeks,
-                     without_esketamine_recovery_rates - z_score * without_esketamine_sems,
-                     without_esketamine_recovery_rates + z_score * without_esketamine_sems,
-                     color='red', alpha=0.1)
+        # Adding confidence intervals
+        plt.fill_between(weeks,
+                         plot_results[run_key] - z_score * plot_results[run_name + "_sems"],
+                         plot_results[run_key] + z_score * plot_results[run_name + "_sems"], alpha=0.1)
 
     # Adding labels and title
     plt.xlabel('Weeks')
     plt.ylabel('Recovery rate')
-    plt.title(f'Recovery rates without and with {int(100 * esketamine_fraction)}% of capacity slots going to Esketamine')
     plt.legend()
     plt.grid(True)
 
@@ -68,38 +66,39 @@ def plot_percentage_in_recovery_multi_run(runs, plot_confidence_interval=True, e
     plt.show()
 
 
-def plot_percentage_in_remission_multi_run(runs, plot_confidence_interval=True, esketamine_fraction=0.2):
+def plot_percentage_in_remission_multi_run(runs, plot_confidence_interval=True, after_weeks=0):
     aggregated_data = dict()
-    aggregated_data["with_esketamine"] = dict()
-    aggregated_data["without_esketamine"] = dict()
 
-    for with_or_without_esketamine in ["with_esketamine", "without_esketamine"]:
-        for sim_num in runs[with_or_without_esketamine]:
-            for time_step in runs[with_or_without_esketamine][sim_num]["run_statistics"][0]:
-                if time_step not in aggregated_data[with_or_without_esketamine]:
-                    aggregated_data[with_or_without_esketamine][time_step] = dict()
-                if "sim_dataset" not in aggregated_data[with_or_without_esketamine][time_step]:
-                    aggregated_data[with_or_without_esketamine][time_step]["sim_dataset"] = []
+    for run_name in runs:
+        aggregated_data[run_name] = dict()
 
-                aggregated_data[with_or_without_esketamine][time_step]["sim_dataset"]\
-                    .append(runs[with_or_without_esketamine][sim_num]["run_statistics"][0][time_step]["percentage_in_remission"])
+        for sim_num in runs[run_name]:
+            for time_step in runs[run_name][sim_num]["run_statistics"][0]:
+                if time_step not in aggregated_data[run_name]:
+                    aggregated_data[run_name][time_step] = dict()
+                if "sim_dataset" not in aggregated_data[run_name][time_step]:
+                    aggregated_data[run_name][time_step]["sim_dataset"] = []
 
-    for with_or_without_esketamine in ["with_esketamine", "without_esketamine"]:
-        for time_step in aggregated_data[with_or_without_esketamine]:
-            aggregated_data[with_or_without_esketamine][time_step]["mean"] = np.mean(aggregated_data[with_or_without_esketamine][time_step]["sim_dataset"])
+                aggregated_data[run_name][time_step]["sim_dataset"]\
+                    .append(runs[run_name][sim_num]["run_statistics"][0][time_step]["percentage_in_remission"])
+
+    for run_name in runs:
+        for time_step in aggregated_data[run_name]:
+            aggregated_data[run_name][time_step]["mean"] = np.mean(aggregated_data[run_name][time_step]["sim_dataset"])
             if plot_confidence_interval:
                 # Calculate standard error of the mean (SEM)
-                aggregated_data[with_or_without_esketamine][time_step]["sem"] = sem(
-                    aggregated_data[with_or_without_esketamine][time_step]["sim_dataset"])
+                aggregated_data[run_name][time_step]["sem"] = sem(
+                    aggregated_data[run_name][time_step]["sim_dataset"])
 
-    weeks = list(aggregated_data["with_esketamine"].keys())
-    with_esketamine_remission_rates = np.array(
-        [aggregated_data["with_esketamine"][time_step]["mean"] for time_step in weeks])
-    with_esketamine_sems = np.array([aggregated_data["with_esketamine"][time_step]["sem"] for time_step in weeks])
+    weeks = list(aggregated_data["without_esketamine"].keys())
 
-    without_esketamine_remission_rates = np.array(
-        [aggregated_data["without_esketamine"][time_step]["mean"] for time_step in weeks])
-    without_esketamine_sems = np.array([aggregated_data["without_esketamine"][time_step]["sem"] for time_step in weeks])
+    plot_results = dict()
+    for run_name in runs:
+        plot_results[run_name + "_remission_rates"] = np.array([aggregated_data[run_name][time_step]["mean"] for time_step in weeks])
+        plot_results[run_name + "_sems"] = np.array([aggregated_data[run_name][time_step]["sem"] for time_step in weeks])
+
+        plot_results[run_name + "_remission_rates"] = plot_results[run_name + "_remission_rates"][after_weeks:]
+        plot_results[run_name + "_sems"] = plot_results[run_name + "_sems"][after_weeks:]
 
     # Z-score for 95% confidence
     z_score = 1.96
@@ -108,24 +107,21 @@ def plot_percentage_in_remission_multi_run(runs, plot_confidence_interval=True, 
     plt.figure()
 
     # Plotting the mean remission rates
-    plt.plot(weeks, with_esketamine_remission_rates, label='Remission rates with Esketamine', color='blue')
-    plt.plot(weeks, without_esketamine_remission_rates, label='Remission rates without Esketamine', color='red')
+    if after_weeks > 0:
+        weeks = weeks[:-after_weeks]
 
-    # Adding confidence intervals
-    plt.fill_between(weeks,
-                     with_esketamine_remission_rates - z_score * with_esketamine_sems,
-                     with_esketamine_remission_rates + z_score * with_esketamine_sems,
-                     color='blue', alpha=0.1)
+    for run_name in runs:
+        run_key = run_name + "_remission_rates"
+        plt.plot(weeks, plot_results[run_key], label=run_key.replace("_", " "))
 
-    plt.fill_between(weeks,
-                     without_esketamine_remission_rates - z_score * without_esketamine_sems,
-                     without_esketamine_remission_rates + z_score * without_esketamine_sems,
-                     color='red', alpha=0.1)
+        # Adding confidence intervals
+        plt.fill_between(weeks,
+                         plot_results[run_key] - z_score * plot_results[run_name + "_sems"],
+                         plot_results[run_key] + z_score * plot_results[run_name + "_sems"], alpha=0.1)
 
     # Adding labels and title
     plt.xlabel('Weeks')
     plt.ylabel('Remission rate')
-    plt.title(f'Remission rates without and with {int(100 * esketamine_fraction)}% of capacity slots going to Esketamine')
     plt.legend()
     plt.grid(True)
 
@@ -133,22 +129,22 @@ def plot_percentage_in_remission_multi_run(runs, plot_confidence_interval=True, 
     plt.show()
 
 
-def plot_num_of_people_on_waiting_list_mean_multi_run(runs, with_or_without_esketamine="with_esketamine", esketamine_fraction=0.2):
+def plot_num_of_people_on_waiting_list_mean_multi_run(run_name, run_data, after_weeks=0):
 
     aggregated_data = dict()
 
-    for sim_num in runs[with_or_without_esketamine]:
-        for time_step in runs[with_or_without_esketamine][sim_num]["run_statistics"][0]:
+    for sim_num in run_data:
+        for time_step in run_data[sim_num]["run_statistics"][0]:
             if time_step not in aggregated_data:
                 aggregated_data[time_step] = dict()
-            for waiting_list in runs[with_or_without_esketamine][sim_num]["run_statistics"][0][time_step]["waiting_list_count"]:
+            for waiting_list in run_data[sim_num]["run_statistics"][0][time_step]["waiting_list_count"]:
                 if waiting_list not in aggregated_data[time_step]:
                     aggregated_data[time_step][waiting_list] = dict()
                 if "sim_dataset" not in aggregated_data[time_step][waiting_list]:
                     aggregated_data[time_step][waiting_list]["sim_dataset"] = []
 
                 aggregated_data[time_step][waiting_list]["sim_dataset"]\
-                    .append(runs[with_or_without_esketamine][sim_num]["run_statistics"][0][time_step]["waiting_list_count"][waiting_list])
+                    .append(run_data[sim_num]["run_statistics"][0][time_step]["waiting_list_count"][waiting_list])
 
     for time_step in aggregated_data:
         for waiting_list in aggregated_data[time_step]:
@@ -158,26 +154,36 @@ def plot_num_of_people_on_waiting_list_mean_multi_run(runs, with_or_without_eske
     antidepressant_counts = [aggregated_data[time_step]["antidepressant_waiting_list"]["mean"] for time_step in weeks]
     antidepressant_antipsychotic_counts = [aggregated_data[time_step]["antidepressant_antipsychotic_waiting_list"]["mean"] for time_step in weeks]
     antipsychotic_counts = [aggregated_data[time_step]["antipsychotic_waiting_list"]["mean"] for time_step in weeks]
-    if with_or_without_esketamine == "with_esketamine":
+    if "%" in run_name:
+        # it is with eskt
         esketamine_counts = [aggregated_data[time_step]["esketamine_waiting_list"]["mean"] for time_step in weeks]
     ect_counts = [aggregated_data[time_step]["ect_waiting_list"]["mean"] for time_step in weeks]
 
     # Creating the plot
-    plt.figure()
+    if after_weeks > 0:
+        weeks = weeks[:-after_weeks]
+    antidepressant_counts = antidepressant_counts[after_weeks:]
+    antidepressant_antipsychotic_counts = antidepressant_antipsychotic_counts[after_weeks:]
+    antipsychotic_counts = antipsychotic_counts[after_weeks:]
+    ect_counts = ect_counts[after_weeks:]
+    # plt.figure()
+    plt.figure(figsize=(10, 6))
     plt.plot(weeks, antidepressant_counts, label='Antidepressant')
     plt.plot(weeks, antidepressant_antipsychotic_counts, label='Antidepressant + Antipsychotic')
     plt.plot(weeks, antipsychotic_counts, label='Antipsychotic')
-    if with_or_without_esketamine == "with_esketamine":
+    if "%" in run_name:
+        esketamine_counts = esketamine_counts[after_weeks:]
         plt.plot(weeks, esketamine_counts, label='Esketamine')
     plt.plot(weeks, ect_counts, label='ECT')
 
     # Adding labels and title
     plt.xlabel('Weeks')
     plt.ylabel('Number of People on a Waiting List')
-    if with_or_without_esketamine == "with_esketamine":
-        plt.title(f'Number of people in each waiting list over time with {int(100 * esketamine_fraction)}% of capacity going to Esketamine')
+    if "%" in run_name:
+        eskt_percentage = run_name.split("%")[0]
+        plt.title(f"{eskt_percentage}% of capacity going to Esketamine")
     else:
-        plt.title('Number of people in each waiting list over time without Esketamine')
+        plt.title("Without Esketamine")
     plt.legend()
     plt.grid(True)
 
