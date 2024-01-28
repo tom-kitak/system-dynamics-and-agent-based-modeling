@@ -28,7 +28,7 @@ if __name__ == "__main__":
 
     # Parameters
     NUM_SIMULATIONS = 30
-    ESKETAMINE_CAPACITY_FRACTIONS = [0.1, 0.2, 0.3]
+    ESKETAMINE_CAPACITY_FRACTIONS = [0.1, 0.2, 0.4]
 
     AFTER_WEEKS_PLOT = 0
     CONFIG_FILE = "config_eskt.json"
