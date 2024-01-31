@@ -31,7 +31,7 @@
          "relapse_rate": 0.267,
          "capacity": 10
       },
-         "antidepressant":{
+      "antidepressant":{
          "duration":4,
          "treatment_cost": 924,
          "maintenance_cost": 34,
