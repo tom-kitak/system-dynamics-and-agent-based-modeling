@@ -232,41 +232,56 @@ def plot_percentage_in_remission_multi_run(runs, plot_confidence_interval=True, 
     plot_results = dict()
     for run_name in runs:
         plot_results[run_name + "_remission_rates"] = np.array([aggregated_data[run_name][time_step]["mean"] for time_step in weeks])
-        plot_results[run_name + "_sems"] = np.array([aggregated_data[run_name][time_step]["sem"] for time_step in weeks])
-
         plot_results[run_name + "_remission_rates"] = plot_results[run_name + "_remission_rates"][after_weeks:]
-        plot_results[run_name + "_sems"] = plot_results[run_name + "_sems"][after_weeks:]
+
+        if plot_confidence_interval:
+            plot_results[run_name + "_sems"] = np.array(
+                [aggregated_data[run_name][time_step]["sem"] for time_step in weeks])
+            plot_results[run_name + "_sems"] = plot_results[run_name + "_sems"][after_weeks:]
 
     # Z-score for 95% confidence
     z_score = 1.96
 
     # Creating the plot
-    plt.figure(figsize=(8, 6))
+    plt.figure(figsize=(6, 4.5))
 
-    # Plotting the mean remission rates
+    # Plotting the mean recovery rates
     if after_weeks > 0:
         weeks = weeks[:-after_weeks]
 
-    for run_name in runs:
+    markers = ['o', 's', 'D', '^', 'v']  # Circle, Square, Diamond, Triangle Up, Triangle Down
+    colors = ["blue", "red", "green", "orange"]
+    markevery = 0.1
+
+    weeks = [int(float(k)) for k in weeks]
+
+    for i, run_name in enumerate(runs):
         run_key = run_name + "_remission_rates"
-        plt.plot(weeks, plot_results[run_key], label=run_key.replace("_", " "))
+
+        if "%" in run_name:
+            label = f"{run_name.split('%')[0]}% of capacity Esketamine"
+        else:
+            label = "Without Esketamine"
+        plt.plot(weeks, plot_results[run_key], label=label, color=colors[i], marker=markers[i], markevery=markevery)
 
         # Adding confidence intervals
-        plt.fill_between(weeks,
-                         plot_results[run_key] - z_score * plot_results[run_name + "_sems"],
-                         plot_results[run_key] + z_score * plot_results[run_name + "_sems"], alpha=0.1)
+        if plot_confidence_interval:
+            plt.fill_between(weeks,
+                             plot_results[run_key] - z_score * plot_results[run_name + "_sems"],
+                             plot_results[run_key] + z_score * plot_results[run_name + "_sems"], alpha=0.1)
 
     # Adding labels and title
     plt.xlabel('Weeks')
-    plt.ylabel('Remission rate')
+    plt.ylabel('Proportion of patients in remission')
+    plt.title("Proportion of patient population in remission")
     plt.legend()
-    # plt.grid(True)
-
-    max_weeks = len(weeks)
-    plt.xticks(np.arange(0, max_weeks + 1, 100))  # Setting x-axis ticks every 100 weeks
-    plt.grid(True, which='both', axis='x', linestyle='-', linewidth=0.5)  # Adding grid lines for x-axis
+    plt.grid(True)
 
     # Display the plot
+    plt.xlim(0, 750)
+    plt.ylim(0, 0.1)
+
+    plt.savefig('proportion_in_remission.png', dpi=300, bbox_inches='tight')
     plt.show()
 
 

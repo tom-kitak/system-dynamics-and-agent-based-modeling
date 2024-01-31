@@ -22,3 +22,4 @@ if __name__ == "__main__":
     plotter.plot_percentage_in_recovery_multi_run(runs, after_weeks=AFTER_WEEKS_PLOT, plot_confidence_interval=False)
     plotter.plot_absolute_in_all_waiting_list_multi_run(runs)
     plotter.plot_proportion_in_all_waiting_list_multi_run(runs)
+    plotter.plot_percentage_in_remission_multi_run(runs, plot_confidence_interval=False)
