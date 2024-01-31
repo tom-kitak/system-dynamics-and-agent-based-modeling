@@ -28,7 +28,7 @@ def run(model, config):
 if __name__ == "__main__":
 
     # Parameters
-    NUM_SIMULATIONS = 1
+    NUM_SIMULATIONS = 10
     ESKETAMINE_CAPACITY_FRACTIONS = [0.1, 0.2, 0.4]
 
     AFTER_WEEKS_PLOT = 0

@@ -3,6 +3,124 @@ import numpy as np
 from scipy.stats import sem
 
 
+def plot_absolute_in_all_waiting_list_multi_run(runs):
+    aggregated_data = dict()
+
+    for run_name in runs:
+        aggregated_data[run_name] = dict()
+
+        for sim_num in runs[run_name]:
+            for time_step in runs[run_name][sim_num]["run_statistics"][0]:
+                if time_step not in aggregated_data[run_name]:
+                    aggregated_data[run_name][time_step] = dict()
+                if "sim_dataset" not in aggregated_data[run_name][time_step]:
+                    aggregated_data[run_name][time_step]["sim_dataset"] = []
+
+                aggregated_data[run_name][time_step]["sim_dataset"]\
+                    .append(runs[run_name][sim_num]["run_statistics"][0][time_step]["absolute_waiting_list_size"])
+
+    for run_name in runs:
+        for time_step in aggregated_data[run_name]:
+            aggregated_data[run_name][time_step]["mean"] = np.mean(aggregated_data[run_name][time_step]["sim_dataset"])
+
+    weeks = list(aggregated_data["without_esketamine"].keys())
+
+    plot_results = dict()
+    for run_name in runs:
+        plot_results[run_name + "_absolute_waiting_list_size"] = np.array([aggregated_data[run_name][time_step]["mean"] for time_step in weeks])
+
+    # Creating the plot
+    plt.figure(figsize=(6, 4.5))
+
+    markers = ['o', 's', 'D', '^', 'v']  # Circle, Square, Diamond, Triangle Up, Triangle Down
+    colors = ["blue", "red", "green", "orange"]
+    markevery = 0.1
+
+    weeks = [int(float(k)) for k in weeks]
+
+    for i, run_name in enumerate(runs):
+        run_key = run_name + "_absolute_waiting_list_size"
+
+        if "%" in run_name:
+            label = f"{run_name.split('%')[0]}% of capacity Esketamine"
+        else:
+            label = "Without Esketamine"
+        plt.plot(weeks, plot_results[run_key], label=label, color=colors[i], marker=markers[i], markevery=markevery)
+
+    # Adding labels and title
+    plt.xlabel('Weeks')
+    plt.ylabel('Number of people on a waiting list')
+    # plt.title("Number of people on a waiting list")
+    plt.legend()
+    plt.grid(True)
+
+    # Display the plot
+    plt.xlim(0, 750)
+    plt.ylim(0, 1400)
+
+    plt.savefig('absolute_waiting_list_size.png', dpi=300, bbox_inches='tight')
+    plt.show()
+
+
+def plot_proportion_in_all_waiting_list_multi_run(runs):
+    aggregated_data = dict()
+
+    for run_name in runs:
+        aggregated_data[run_name] = dict()
+
+        for sim_num in runs[run_name]:
+            for time_step in runs[run_name][sim_num]["run_statistics"][0]:
+                if time_step not in aggregated_data[run_name]:
+                    aggregated_data[run_name][time_step] = dict()
+                if "sim_dataset" not in aggregated_data[run_name][time_step]:
+                    aggregated_data[run_name][time_step]["sim_dataset"] = []
+
+                aggregated_data[run_name][time_step]["sim_dataset"]\
+                    .append(runs[run_name][sim_num]["run_statistics"][0][time_step]["relative_waiting_list_size"])
+
+    for run_name in runs:
+        for time_step in aggregated_data[run_name]:
+            aggregated_data[run_name][time_step]["mean"] = np.mean(aggregated_data[run_name][time_step]["sim_dataset"])
+
+    weeks = list(aggregated_data["without_esketamine"].keys())
+
+    plot_results = dict()
+    for run_name in runs:
+        plot_results[run_name + "_relative_waiting_list_size"] = np.array([aggregated_data[run_name][time_step]["mean"] for time_step in weeks])
+
+    # Creating the plot
+    plt.figure(figsize=(6, 4.5))
+
+    markers = ['o', 's', 'D', '^', 'v']  # Circle, Square, Diamond, Triangle Up, Triangle Down
+    colors = ["blue", "red", "green", "orange"]
+    markevery = 0.1
+
+    weeks = [int(float(k)) for k in weeks]
+
+    for i, run_name in enumerate(runs):
+        run_key = run_name + "_relative_waiting_list_size"
+
+        if "%" in run_name:
+            label = f"{run_name.split('%')[0]}% of capacity Esketamine"
+        else:
+            label = "Without Esketamine"
+        plt.plot(weeks, plot_results[run_key], label=label, color=colors[i], marker=markers[i], markevery=markevery)
+
+    # Adding labels and title
+    plt.xlabel('Weeks')
+    plt.ylabel('Proportion of people on a waiting list')
+    # plt.title("Number of people on a waiting list")
+    plt.legend()
+    plt.grid(True)
+
+    # Display the plot
+    plt.xlim(0, 750)
+    plt.ylim(0, 1)
+
+    plt.savefig('proportion_waiting_list_size.png', dpi=300, bbox_inches='tight')
+    plt.show()
+
+
 def plot_percentage_in_recovery_multi_run(runs, plot_confidence_interval=True, after_weeks=0):
     aggregated_data = dict()
 
@@ -32,38 +150,56 @@ def plot_percentage_in_recovery_multi_run(runs, plot_confidence_interval=True, a
     plot_results = dict()
     for run_name in runs:
         plot_results[run_name + "_recovery_rates"] = np.array([aggregated_data[run_name][time_step]["mean"] for time_step in weeks])
-        plot_results[run_name + "_sems"] = np.array([aggregated_data[run_name][time_step]["sem"] for time_step in weeks])
-
         plot_results[run_name + "_recovery_rates"] = plot_results[run_name + "_recovery_rates"][after_weeks:]
-        plot_results[run_name + "_sems"] = plot_results[run_name + "_sems"][after_weeks:]
+
+        if plot_confidence_interval:
+            plot_results[run_name + "_sems"] = np.array(
+                [aggregated_data[run_name][time_step]["sem"] for time_step in weeks])
+            plot_results[run_name + "_sems"] = plot_results[run_name + "_sems"][after_weeks:]
 
     # Z-score for 95% confidence
     z_score = 1.96
 
     # Creating the plot
-    plt.figure(figsize=(8, 6))
+    plt.figure(figsize=(6, 4.5))
 
     # Plotting the mean recovery rates
     if after_weeks > 0:
         weeks = weeks[:-after_weeks]
 
-    for run_name in runs:
+    markers = ['o', 's', 'D', '^', 'v']  # Circle, Square, Diamond, Triangle Up, Triangle Down
+    colors = ["blue", "red", "green", "orange"]
+    markevery = 0.1
+
+    weeks = [int(float(k)) for k in weeks]
+
+    for i, run_name in enumerate(runs):
         run_key = run_name + "_recovery_rates"
-        plt.plot(weeks, plot_results[run_key], label=run_key.replace("_", " "))
+
+        if "%" in run_name:
+            label = f"{run_name.split('%')[0]}% of capacity Esketamine"
+        else:
+            label = "Without Esketamine"
+        plt.plot(weeks, plot_results[run_key], label=label, color=colors[i], marker=markers[i], markevery=markevery)
 
         # Adding confidence intervals
-        plt.fill_between(weeks,
-                         plot_results[run_key] - z_score * plot_results[run_name + "_sems"],
-                         plot_results[run_key] + z_score * plot_results[run_name + "_sems"], alpha=0.1)
+        if plot_confidence_interval:
+            plt.fill_between(weeks,
+                             plot_results[run_key] - z_score * plot_results[run_name + "_sems"],
+                             plot_results[run_key] + z_score * plot_results[run_name + "_sems"], alpha=0.1)
 
     # Adding labels and title
     plt.xlabel('Weeks')
-    plt.ylabel('Recovery rate')
+    plt.ylabel('Proportion of patients in recovery')
+    plt.title("Proportion of patient population in recovery")
     plt.legend()
     plt.grid(True)
 
     # Display the plot
+    plt.xlim(0, 750)
     plt.ylim(0, 1)
+
+    plt.savefig('proportion_in_recovery.png', dpi=300, bbox_inches='tight')
     plt.show()
 
 
