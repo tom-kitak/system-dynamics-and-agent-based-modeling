@@ -63,6 +63,7 @@ def plot_percentage_in_recovery_multi_run(runs, plot_confidence_interval=True, a
     plt.grid(True)
 
     # Display the plot
+    plt.ylim(0, 1)
     plt.show()
 
 
@@ -126,6 +127,7 @@ def plot_percentage_in_remission_multi_run(runs, plot_confidence_interval=True, 
     plt.grid(True)
 
     # Display the plot
+    plt.ylim(0, 1)
     plt.show()
 
 
@@ -188,6 +190,7 @@ def plot_num_of_people_on_waiting_list_mean_multi_run(run_name, run_data, after_
     plt.grid(True)
 
     # Display the plot
+    plt.ylim(0, 1300)
     plt.show()
 
 

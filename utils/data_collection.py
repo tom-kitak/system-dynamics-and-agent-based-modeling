@@ -30,6 +30,9 @@ class PatientDataCollector:
         self.aggregated_statistics[time]["waiting_list_count"]["esketamine_waiting_list"] = 0
         self.aggregated_statistics[time]["waiting_list_count"]["ect_waiting_list"] = 0
 
+        self.aggregated_statistics[time]["absolute_waiting_list_size"] = 0
+        self.aggregated_statistics[time]["relative_waiting_list_size"] = 0.0
+
         self.aggregated_statistics[time]["percentage_in_remission"] = 0.0
         self.aggregated_statistics[time]["num_in_remission"] = 0
         self.aggregated_statistics[time]["percentage_in_recovery"] = 0.0
@@ -40,6 +43,7 @@ class PatientDataCollector:
             # Collect number of patients in waiting list
             if "waiting_list" in agent.state:
                 self.aggregated_statistics[time]["waiting_list_count"][agent.state] += 1
+                self.aggregated_statistics[time]["absolute_waiting_list_size"] += 1
 
             # Collect percentage of patients in remission
             if "remission" in agent.state:
@@ -95,6 +99,7 @@ class PatientDataCollector:
         self.aggregated_statistics[time]["percentage_in_remission"] = self.aggregated_statistics[time]["num_in_remission"] / len(agents)
         self.aggregated_statistics[time]["percentage_in_recovery"] = self.aggregated_statistics[time][
                                                                           "num_in_recovery"] / len(agents)
+        self.aggregated_statistics[time]["relative_waiting_list_size"] = self.aggregated_statistics[time]["absolute_waiting_list_size"] / len(agents)
 
 
     def statistics(self):

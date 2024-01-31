@@ -8,6 +8,7 @@ from utils import plotter, statistics as custom_stats
 import json
 import os
 from datetime import datetime
+import time
 
 
 def run(model, config):
@@ -35,6 +36,7 @@ if __name__ == "__main__":
     SAVE_FILE = "aggregated_results.json"
 
     # Load config file
+    start_time = time.perf_counter()
     pwd = os.path.dirname(os.path.realpath(__file__))
     config_file_path = os.path.join(pwd, "../configs", CONFIG_FILE)
 
@@ -76,6 +78,10 @@ if __name__ == "__main__":
         json.dump(runs, file, indent=4)
 
     aggregated_statistics_results = custom_stats.aggregated_statistics(runs)
+
+    end_time = time.perf_counter()
+    execution_time = end_time - start_time
+    metadata["time_it_took_to_run_in_seconds"] = execution_time
     aggregated_statistics_results["metadata"] = metadata
 
     save_file_path = os.path.join(pwd, "../results", SAVE_FILE)
