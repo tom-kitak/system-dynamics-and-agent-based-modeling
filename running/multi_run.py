@@ -27,7 +27,7 @@ def run(model, config):
 if __name__ == "__main__":
 
     # Parameters
-    NUM_SIMULATIONS = 30
+    NUM_SIMULATIONS = 1
     ESKETAMINE_CAPACITY_FRACTIONS = [0.1, 0.2, 0.4]
 
     AFTER_WEEKS_PLOT = 0
@@ -62,14 +62,14 @@ if __name__ == "__main__":
     runs["without_esketamine"] = {}
 
     with open(config_file_path, 'r') as file:
-        config_eskt = json.load(file)
+        config = json.load(file)
 
-    capacity_allocation(config_eskt, esketamine_fraction=0.0)
+    capacity_allocation(config, esketamine_fraction=0.0)
 
     for sim_num in tqdm(range(NUM_SIMULATIONS)):
         model = DepressionTreatmentHybridABSDWithoutEsketamine(name="ETreatment pathway without Esketamie", scheduler=SimultaneousScheduler(), data_collector=PatientDataCollector())
-        runs["without_esketamine"][f"sim_run_{sim_num}"] = run(model, config_eskt)
-    metadata[key] = config_eskt
+        runs["without_esketamine"][f"sim_run_{sim_num}"] = run(model, config)
+    metadata["without_esketamine"] = config
 
     save_file_path = os.path.join(pwd, "../results", "runs_data_dump.json")
     with open(save_file_path, 'w') as file:
