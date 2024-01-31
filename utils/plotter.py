@@ -41,7 +41,7 @@ def plot_percentage_in_recovery_multi_run(runs, plot_confidence_interval=True, a
     z_score = 1.96
 
     # Creating the plot
-    plt.figure()
+    plt.figure(figsize=(8, 6))
 
     # Plotting the mean recovery rates
     if after_weeks > 0:
@@ -105,7 +105,7 @@ def plot_percentage_in_remission_multi_run(runs, plot_confidence_interval=True, 
     z_score = 1.96
 
     # Creating the plot
-    plt.figure()
+    plt.figure(figsize=(8, 6))
 
     # Plotting the mean remission rates
     if after_weeks > 0:
@@ -124,10 +124,13 @@ def plot_percentage_in_remission_multi_run(runs, plot_confidence_interval=True, 
     plt.xlabel('Weeks')
     plt.ylabel('Remission rate')
     plt.legend()
-    plt.grid(True)
+    # plt.grid(True)
+
+    max_weeks = len(weeks)
+    plt.xticks(np.arange(0, max_weeks + 1, 100))  # Setting x-axis ticks every 100 weeks
+    plt.grid(True, which='both', axis='x', linestyle='-', linewidth=0.5)  # Adding grid lines for x-axis
 
     # Display the plot
-    plt.ylim(0, 1)
     plt.show()
 
 
@@ -153,6 +156,7 @@ def plot_num_of_people_on_waiting_list_mean_multi_run(run_name, run_data, after_
             aggregated_data[time_step][waiting_list]["mean"] = np.mean(aggregated_data[time_step][waiting_list]["sim_dataset"])
 
     weeks = list(aggregated_data.keys())
+
     antidepressant_counts = [aggregated_data[time_step]["antidepressant_waiting_list"]["mean"] for time_step in weeks]
     antidepressant_antipsychotic_counts = [aggregated_data[time_step]["antidepressant_antipsychotic_waiting_list"]["mean"] for time_step in weeks]
     antipsychotic_counts = [aggregated_data[time_step]["antipsychotic_waiting_list"]["mean"] for time_step in weeks]
@@ -164,33 +168,50 @@ def plot_num_of_people_on_waiting_list_mean_multi_run(run_name, run_data, after_
     # Creating the plot
     if after_weeks > 0:
         weeks = weeks[:-after_weeks]
-    antidepressant_counts = antidepressant_counts[after_weeks:]
-    antidepressant_antipsychotic_counts = antidepressant_antipsychotic_counts[after_weeks:]
-    antipsychotic_counts = antipsychotic_counts[after_weeks:]
-    ect_counts = ect_counts[after_weeks:]
-    # plt.figure()
-    plt.figure(figsize=(10, 6))
-    plt.plot(weeks, antidepressant_counts, label='Antidepressant')
-    plt.plot(weeks, antidepressant_antipsychotic_counts, label='Antidepressant + Antipsychotic')
-    plt.plot(weeks, antipsychotic_counts, label='Antipsychotic')
-    if "%" in run_name:
-        esketamine_counts = esketamine_counts[after_weeks:]
-        plt.plot(weeks, esketamine_counts, label='Esketamine')
-    plt.plot(weeks, ect_counts, label='ECT')
+        antidepressant_counts = antidepressant_counts[after_weeks:]
+        antidepressant_antipsychotic_counts = antidepressant_antipsychotic_counts[after_weeks:]
+        antipsychotic_counts = antipsychotic_counts[after_weeks:]
+        ect_counts = ect_counts[after_weeks:]
+        if "%" in run_name:
+            esketamine_counts = esketamine_counts[after_weeks:]
 
-    # Adding labels and title
+    plt.figure(figsize=(6, 4.5))
+
+    markers = ['o', 's', 'D', '^', 'v']  # Circle, Square, Diamond, Triangle Up, Triangle Down
+    markevery = 50
+
+    weeks = [int(float(k)) for k in weeks]
+    # Plot the lines with markers every 50 weeks
+    plt.plot(weeks, antidepressant_counts, label='Antidepressant', color="blue", marker=markers[0], markevery=markevery)
+    plt.plot(weeks, antidepressant_antipsychotic_counts, label='Antidepressant + Antipsychotic', color="orange", marker=markers[1], markevery=markevery)
+    plt.plot(weeks, antipsychotic_counts, label='Antipsychotic', color="purple", marker=markers[2], markevery=markevery)
+    plt.plot(weeks, ect_counts, label='ECT', color="green", marker=markers[4], markevery=markevery)
+    if "%" in run_name:
+        plt.plot(weeks, esketamine_counts, label='Esketamine', color="red", marker=markers[3], markevery=markevery)
+
+    # # Adding labels and title
     plt.xlabel('Weeks')
-    plt.ylabel('Number of People on a Waiting List')
+    plt.ylabel('Number of people on a waiting list')
+
+    plt.xticks(np.arange(0, 751, 100))
+    plt.yticks(np.arange(0, 1301, 200))
+    plt.xlim(0, 750)
+    plt.ylim(0, 1300)
+
+    # Add grid lines
+    plt.grid(True)
+
     if "%" in run_name:
         eskt_percentage = run_name.split("%")[0]
         plt.title(f"{eskt_percentage}% of capacity going to Esketamine")
     else:
         plt.title("Without Esketamine")
     plt.legend()
-    plt.grid(True)
+
+    # Save the figure in high resolution for scientific paper
+    plt.savefig(f'{run_name}.png', dpi=300, bbox_inches='tight')
 
     # Display the plot
-    plt.ylim(0, 1300)
     plt.show()
 
 
