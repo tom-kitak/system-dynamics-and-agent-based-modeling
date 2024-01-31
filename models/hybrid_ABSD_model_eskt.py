@@ -145,12 +145,8 @@ class DepressionTreatmentHybridABSD(Model):
                     agent.treatment_history.append([agent.state, agent.current_in_treatment_time])
                     agent.current_in_treatment_time = 0
 
-                    remission_prob = self.treatment_properties[agent.state]["remission_rate"]
-                    response_prob = self.treatment_properties[agent.state]["response_rate"] - \
-                                    self.treatment_properties[agent.state]["remission_rate"]
-
                     random_number = random.random()
-                    if random_number < remission_prob:
+                    if random_number < self.treatment_properties[agent.state]["remission_rate"]:
                         # Remission
                         if agent.state == "antidepressant":
                             out_antidepressant += 1
@@ -169,7 +165,7 @@ class DepressionTreatmentHybridABSD(Model):
                         agent.current_in_remission_time = 0
                         agent.treatment_history.append(["remission", 0])
                         in_remission += 1
-                    elif random_number < remission_prob + response_prob:
+                    elif random_number < self.treatment_properties[agent.state]["response_rate"]:
                         # Response -> Start the same treatment again
                         agent.treatment_history.append(["response", 0])
                     else:
@@ -225,10 +221,8 @@ class DepressionTreatmentHybridABSD(Model):
                 agent.treatment_history[-1][1] = agent.current_in_recovery_time
                 treatment_that_got_you_in_recovery = agent.treatment_history[-3][0]
 
-                relapse_probability = self.relapse_function.get_prob_at_time(t=agent.current_in_recovery_time - 1,
-                                                                             p=self.treatment_properties[
-                                                                                 treatment_that_got_you_in_recovery][
-                                                                                 "relapse_rate"],
+                relapse_probability = self.relapse_function.get_prob_at_time(t=agent.current_in_recovery_time-1,
+                                                                             p=self.treatment_properties[treatment_that_got_you_in_recovery]["relapse_rate"],
                                                                              type="discontinued")
                 if random.random() < relapse_probability:
                     # Relapse occurs -> Back to the start of the pipeline

@@ -139,7 +139,7 @@ class DepressionTreatmentHybridABSDWithoutEsketamine(Model):
                                     self.treatment_properties[agent.state]["remission_rate"]
 
                     random_number = random.random()
-                    if random_number < remission_prob:
+                    if random_number < self.treatment_properties[agent.state]["remission_rate"]:
                         # Remission
                         if agent.state == "antidepressant":
                             out_antidepressant += 1
@@ -156,7 +156,7 @@ class DepressionTreatmentHybridABSDWithoutEsketamine(Model):
                         agent.current_in_remission_time = 0
                         agent.treatment_history.append(["remission", 0])
                         in_remission += 1
-                    elif random_number < remission_prob + response_prob:
+                    elif random_number < self.treatment_properties[agent.state]["response_rate"]:
                         # Response -> Start the same treatment again
                         agent.treatment_history.append(["response", 0])
                     else:
@@ -185,7 +185,7 @@ class DepressionTreatmentHybridABSDWithoutEsketamine(Model):
                 agent.treatment_history[-1][1] = agent.current_in_remission_time
                 treatment_that_got_you_in_remission = agent.treatment_history[-2][0]
 
-                relapse_probability = self.relapse_function.get_prob_at_time(t=agent.current_in_remission_time - 1,
+                relapse_probability = self.relapse_function.get_prob_at_time(t=agent.current_in_remission_time-1,
                                                                              p=self.treatment_properties[
                                                                                  treatment_that_got_you_in_remission][
                                                                                  "relapse_rate"],
@@ -210,7 +210,7 @@ class DepressionTreatmentHybridABSDWithoutEsketamine(Model):
                 agent.treatment_history[-1][1] = agent.current_in_recovery_time
                 treatment_that_got_you_in_recovery = agent.treatment_history[-3][0]
 
-                relapse_probability = self.relapse_function.get_prob_at_time(t=agent.current_in_recovery_time - 1,
+                relapse_probability = self.relapse_function.get_prob_at_time(t=agent.current_in_recovery_time-1,
                                                                              p=self.treatment_properties[
                                                                                  treatment_that_got_you_in_recovery][
                                                                                  "relapse_rate"],
